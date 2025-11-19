@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -80,7 +80,7 @@ export const useFormView = () => {
 
   const {
     register,
-    handleSubmit,
+    handleSubmit: hookHandleSubmit,
     formState: { errors },
     setValue,
     watch,
@@ -173,7 +173,7 @@ export const useFormView = () => {
     submitted,
     formError,
     register,
-    handleSubmit: handleSubmit(onSubmit),
+    handleSubmit: hookHandleSubmit(onSubmit),
     errors,
     setValue,
     watch,

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useDashboard } from '@/hooks/useDashboard';
+import { useDashboard } from './Dashboard.module';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, FileText, Eye, Settings, LogOut, Trash2 } from 'lucide-react';
@@ -164,3 +164,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

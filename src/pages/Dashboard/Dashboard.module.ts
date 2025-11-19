@@ -1,12 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from '@/store/hooks';
 import {
   useGetFormsQuery,
   useCreateFormMutation,
   useDeleteFormMutation,
 } from '@/store/api/formsApi';
 import { toast } from '@/hooks/use-toast';
-import { useAuth } from './useAuth';
+import { useAuth } from '@/hooks/useAuth';
 
 export const useDashboard = () => {
   const navigate = useNavigate();

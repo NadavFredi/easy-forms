@@ -1,4 +1,4 @@
-import { useFormView } from '@/hooks/useFormView';
+import { useFormView } from './FormView.module';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -389,3 +389,4 @@ const FormView = () => {
 };
 
 export default FormView;
+

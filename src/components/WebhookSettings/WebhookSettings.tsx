@@ -1,4 +1,4 @@
-import { useWebhookSettings } from '@/hooks/useWebhookSettings';
+import { useWebhookSettings } from './WebhookSettings.module';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -131,3 +131,4 @@ const WebhookSettings = ({ formId }: WebhookSettingsProps) => {
 };
 
 export default WebhookSettings;
+

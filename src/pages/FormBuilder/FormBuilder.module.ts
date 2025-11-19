@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAppSelector } from '@/store/hooks';
 import {
   useGetFormQuery,
   useUpdateFormMutation,
@@ -14,7 +13,7 @@ import {
 } from '@/store/api/fieldsApi';
 import { FormField, FieldType } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
-import { useAuth } from './useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 

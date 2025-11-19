@@ -4,7 +4,7 @@ import { useGetFormQuery } from '@/store/api/formsApi';
 import { useGetFieldsQuery } from '@/store/api/fieldsApi';
 import { useGetSubmissionsQuery } from '@/store/api/submissionsApi';
 import { toast } from '@/hooks/use-toast';
-import { useAuth } from './useAuth';
+import { useAuth } from '@/hooks/useAuth';
 
 export const useSubmissions = () => {
   const { id } = useParams<{ id: string }>();

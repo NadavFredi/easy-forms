@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useFormBuilder } from '@/hooks/useFormBuilder';
+import { useNavigate } from 'react-router-dom';
+import { useFormBuilder } from './FormBuilder.module';
 import { FormField, FieldType } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,6 @@ import {
   DragEndEvent,
 } from '@dnd-kit/core';
 import {
-  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
@@ -364,3 +363,4 @@ const FormBuilder = () => {
 };
 
 export default FormBuilder;
+

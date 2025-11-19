@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useSubmissions } from '@/hooks/useSubmissions';
+import { useSubmissions } from './Submissions.module';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -11,7 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { ArrowLeft, Download, Settings } from 'lucide-react';
-import WebhookSettings from '@/components/WebhookSettings';
+import WebhookSettings from '@/components/WebhookSettings/WebhookSettings';
 
 const Submissions = () => {
   const navigate = useNavigate();
@@ -114,3 +114,4 @@ const Submissions = () => {
 };
 
 export default Submissions;
+
