@@ -1,13 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase, Form, FormField } from '@/lib/supabase';
+import { useFormBuilder } from '@/hooks/useFormBuilder';
+import { FormField, FieldType } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { toast } from '@/hooks/use-toast';
 import { Save, Eye, Plus, Trash2, GripVertical, ArrowLeft } from 'lucide-react';
 import {
   DndContext,
@@ -112,14 +111,24 @@ function SortableField({ field, isSelected, onSelect, onDelete }: SortableFieldP
 }
 
 const FormBuilder = () => {
-  const { id } = useParams<{ id: string }>();
-  const { user } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState<Form | null>(null);
-  const [fields, setFields] = useState<FormField[]>([]);
-  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const {
+    form,
+    fields: initialFields,
+    selectedFieldId,
+    setSelectedFieldId,
+    loading,
+    saving,
+    formError,
+    createNewField,
+    deleteFieldFromDB,
+    handleDragEnd: handleDragEndHook,
+    saveForm: saveFormHook,
+  } = useFormBuilder();
+
+  // Local state for editing
+  const [localForm, setLocalForm] = useState(form);
+  const [localFields, setLocalFields] = useState<FormField[]>(initialFields);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -128,212 +137,57 @@ const FormBuilder = () => {
     })
   );
 
+  // Sync with hook data
   useEffect(() => {
-    if (id && user) {
-      loadForm();
-    }
-  }, [id, user]);
+    if (form) setLocalForm(form);
+  }, [form]);
 
-  const loadForm = async () => {
-    try {
-      const { data: formData, error: formError } = await supabase
-        .from('forms')
-        .select('*')
-        .eq('id', id)
-        .eq('user_id', user?.id)
-        .single();
+  useEffect(() => {
+    setLocalFields(initialFields);
+  }, [initialFields]);
 
-      if (formError) throw formError;
-      setForm(formData);
-
-      const { data: fieldsData, error: fieldsError } = await supabase
-        .from('form_fields')
-        .select('*')
-        .eq('form_id', id)
-        .order('order_index', { ascending: true });
-
-      if (fieldsError) throw fieldsError;
-      setFields(fieldsData || []);
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-      navigate('/dashboard');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const addField = (type: FormField['type'] = 'text') => {
-    const newField: Partial<FormField> = {
-      form_id: id!,
-      type,
-      label: type === 'header' ? 'Header' : type === 'paragraph' ? 'Paragraph' : 'New Field',
-      placeholder: '',
-      required: false,
-      order_index: fields.length,
-      width: 'full',
-      options: type === 'select' || type === 'multiselect' || type === 'radio' 
-        ? { options: ['Option 1', 'Option 2'] }
-        : type === 'link'
-        ? { url: '' }
-        : undefined,
-    };
-
-    const tempId = `temp-${Date.now()}-${Math.random()}`;
-    const fieldWithTempId = { ...newField, id: tempId } as FormField;
-    setFields([...fields, fieldWithTempId]);
-    setSelectedFieldId(tempId);
+  const addField = (type: FieldType = 'text') => {
+    const newField = createNewField(type);
+    setLocalFields([...localFields, newField]);
+    setSelectedFieldId(newField.id);
   };
 
   const updateField = (fieldId: string, updates: Partial<FormField>) => {
-    setFields(fields.map(f => f.id === fieldId ? { ...f, ...updates } : f));
+    setLocalFields(localFields.map((f) => (f.id === fieldId ? { ...f, ...updates } : f)));
   };
 
   const deleteField = async (fieldId: string) => {
-    try {
-      const { error } = await supabase
-        .from('form_fields')
-        .delete()
-        .eq('id', fieldId);
-
-      if (error) throw error;
-      setFields(fields.filter(f => f.id !== fieldId));
+    if (fieldId.startsWith('temp-')) {
+      setLocalFields(localFields.filter((f) => f.id !== fieldId));
       if (selectedFieldId === fieldId) {
         setSelectedFieldId(null);
       }
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
+    } else {
+      try {
+        await deleteFieldFromDB(fieldId);
+        setLocalFields(localFields.filter((f) => f.id !== fieldId));
+        if (selectedFieldId === fieldId) {
+          setSelectedFieldId(null);
+        }
+      } catch (error) {
+        // Error already handled in hook
+      }
     }
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      setFields((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-
-        const newFields = arrayMove(items, oldIndex, newIndex).map((field, index) => ({
-          ...field,
-          order_index: index,
-        }));
-
-        return newFields;
-      });
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const reorderedFields = await handleDragEndHook(event, localFields);
+    if (reorderedFields) {
+      setLocalFields(reorderedFields);
     }
   };
 
   const saveForm = async () => {
-    if (!form) return;
-
-    setSaving(true);
-    try {
-      // Update form
-      const { error: formError } = await supabase
-        .from('forms')
-        .update({
-          title: form.title,
-          description: form.description,
-          slug: form.slug,
-          is_published: form.is_published,
-        })
-        .eq('id', form.id);
-
-      if (formError) throw formError;
-
-      // Get existing field IDs from database
-      const { data: existingFields } = await supabase
-        .from('form_fields')
-        .select('id')
-        .eq('form_id', form.id);
-
-      const existingFieldIds = (existingFields || []).map(f => f.id);
-      const currentFieldIds = fields.map(f => f.id).filter(Boolean) as string[];
-
-      // Delete fields that were removed
-      const fieldsToDelete = existingFieldIds.filter(id => !currentFieldIds.includes(id));
-      if (fieldsToDelete.length > 0) {
-        const { error: deleteError } = await supabase
-          .from('form_fields')
-          .delete()
-          .in('id', fieldsToDelete);
-
-        if (deleteError) throw deleteError;
-      }
-
-      // Upsert fields
-      const updatedFields: FormField[] = [];
-      for (const field of fields) {
-        // Check if field has a real ID (not a temp ID)
-        if (field.id && !field.id.startsWith('temp-')) {
-          const { data, error } = await supabase
-            .from('form_fields')
-            .update({
-              type: field.type,
-              label: field.label,
-              placeholder: field.placeholder,
-              required: field.required,
-              options: field.options,
-              validation: field.validation,
-              order_index: field.order_index,
-              width: field.width,
-            })
-            .eq('id', field.id)
-            .select()
-            .single();
-
-          if (error) throw error;
-          updatedFields.push(data);
-        } else {
-          // Insert new field
-          const { data, error } = await supabase
-            .from('form_fields')
-            .insert({
-              form_id: form.id,
-              type: field.type,
-              label: field.label,
-              placeholder: field.placeholder,
-              required: field.required,
-              options: field.options,
-              validation: field.validation,
-              order_index: field.order_index,
-              width: field.width,
-            })
-            .select()
-            .single();
-
-          if (error) throw error;
-          updatedFields.push(data);
-        }
-      }
-
-      // Update local state with saved fields (to get IDs for new fields)
-      setFields(updatedFields.sort((a, b) => a.order_index - b.order_index));
-
-      toast({
-        title: 'Success',
-        description: 'Form saved successfully!',
-      });
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } finally {
-      setSaving(false);
-    }
+    if (!localForm) return;
+    await saveFormHook(localForm, localFields);
   };
 
-  const selectedField = fields.find(f => f.id === selectedFieldId);
+  const selectedField = localFields.find((f) => f.id === selectedFieldId);
 
   if (loading) {
     return (
@@ -343,7 +197,7 @@ const FormBuilder = () => {
     );
   }
 
-  if (!form) {
+  if (!localForm) {
     return null;
   }
 
@@ -358,8 +212,8 @@ const FormBuilder = () => {
                 Back
               </Button>
               <Input
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                value={localForm.title}
+                onChange={(e) => setLocalForm({ ...localForm, title: e.target.value })}
                 className="text-xl font-bold border-0 focus-visible:ring-0 p-0 h-auto"
                 placeholder="Form Title"
               />
@@ -367,7 +221,7 @@ const FormBuilder = () => {
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
-                onClick={() => window.open(`/f/${form.slug}`, '_blank')}
+                onClick={() => window.open(`/f/${localForm.slug}`, '_blank')}
               >
                 <Eye className="h-4 w-4 mr-2" />
                 Preview
@@ -410,7 +264,7 @@ const FormBuilder = () => {
                     key={type}
                     variant="outline"
                     size="sm"
-                    onClick={() => addField(type as FormField['type'])}
+                    onClick={() => addField(type as FieldType)}
                     className="justify-start"
                   >
                     <Plus className="h-4 w-4 mr-2" />
@@ -426,16 +280,16 @@ const FormBuilder = () => {
               <div className="space-y-2">
                 <Label>Slug</Label>
                 <Input
-                  value={form.slug}
-                  onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                  value={localForm.slug}
+                  onChange={(e) => setLocalForm({ ...localForm, slug: e.target.value })}
                   placeholder="form-slug"
                 />
               </div>
               <div className="space-y-2">
                 <Label>Description</Label>
                 <Textarea
-                  value={form.description || ''}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  value={localForm.description || ''}
+                  onChange={(e) => setLocalForm({ ...localForm, description: e.target.value })}
                   placeholder="Form description"
                   rows={3}
                 />
@@ -443,8 +297,10 @@ const FormBuilder = () => {
               <div className="flex items-center space-x-2">
                 <Switch
                   id="published"
-                  checked={form.is_published}
-                  onCheckedChange={(checked) => setForm({ ...form, is_published: checked })}
+                  checked={localForm.is_published}
+                  onCheckedChange={(checked) =>
+                    setLocalForm({ ...localForm, is_published: checked })
+                  }
                 />
                 <Label htmlFor="published">Published</Label>
               </div>
@@ -455,7 +311,7 @@ const FormBuilder = () => {
           <div className="lg:col-span-1">
             <h3 className="text-lg font-semibold mb-4">Form Preview</h3>
             <div className="border rounded-lg p-6 bg-accent/30 min-h-[400px]">
-              {fields.length === 0 ? (
+              {localFields.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
                   <p className="mb-4">No fields yet</p>
                   <p className="text-sm">Add fields from the left sidebar</p>
@@ -467,26 +323,17 @@ const FormBuilder = () => {
                   onDragEnd={handleDragEnd}
                 >
                   <SortableContext
-                    items={fields.map(f => f.id)}
+                    items={localFields.map((f) => f.id)}
                     strategy={verticalListSortingStrategy}
                   >
                     <div className="space-y-4">
-                      {fields.map((field) => (
+                      {localFields.map((field) => (
                         <SortableField
                           key={field.id}
                           field={field}
                           isSelected={selectedFieldId === field.id}
                           onSelect={() => setSelectedFieldId(field.id)}
-                          onDelete={() => {
-                            if (field.id && !field.id.startsWith('temp-')) {
-                              deleteField(field.id);
-                            } else {
-                              setFields(fields.filter(f => f.id !== field.id));
-                              if (selectedFieldId === field.id) {
-                                setSelectedFieldId(null);
-                              }
-                            }
-                          }}
+                          onDelete={() => deleteField(field.id)}
                         />
                       ))}
                     </div>
@@ -502,7 +349,7 @@ const FormBuilder = () => {
             {selectedField ? (
               <FieldEditor
                 field={selectedField}
-                onChange={(updates) => updateField(selectedField.id!, updates)}
+                onChange={(updates) => updateField(selectedField.id, updates)}
               />
             ) : (
               <div className="border rounded-lg p-8 text-center text-muted-foreground">
@@ -517,4 +364,3 @@ const FormBuilder = () => {
 };
 
 export default FormBuilder;
-

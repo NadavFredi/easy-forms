@@ -1,9 +1,4 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { supabase, Form, FormField } from '@/lib/supabase';
+import { useFormView } from '@/hooks/useFormView';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,204 +7,25 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { toast } from '@/hooks/use-toast';
 import { Loader2, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { FormField } from '@/lib/supabase';
 
 const FormView = () => {
-  const { slug } = useParams<{ slug: string }>();
-  const [form, setForm] = useState<Form | null>(null);
-  const [fields, setFields] = useState<FormField[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-
-  useEffect(() => {
-    if (slug) {
-      loadForm();
-    }
-  }, [slug]);
-
-  const loadForm = async () => {
-    try {
-      const { data: formData, error: formError } = await supabase
-        .from('forms')
-        .select('*')
-        .eq('slug', slug)
-        .eq('is_published', true)
-        .single();
-
-      if (formError) throw formError;
-      setForm(formData);
-
-      const { data: fieldsData, error: fieldsError } = await supabase
-        .from('form_fields')
-        .select('*')
-        .eq('form_id', formData.id)
-        .order('order_index', { ascending: true });
-
-      if (fieldsError) throw fieldsError;
-      setFields(fieldsData || []);
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: 'Form not found or not published',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Build validation schema
-  const buildSchema = () => {
-    const schemaObject: Record<string, any> = {};
-
-    fields.forEach((field) => {
-      if (['header', 'paragraph', 'link', 'separator'].includes(field.type)) {
-        return;
-      }
-
-      let fieldSchema: z.ZodTypeAny;
-
-      switch (field.type) {
-        case 'email':
-          fieldSchema = z.string().email('Invalid email address');
-          break;
-        case 'number':
-          fieldSchema = z.coerce.number();
-          break;
-        case 'url':
-          fieldSchema = z.string().url('Invalid URL');
-          break;
-        case 'tel':
-          fieldSchema = z.string().regex(/^\+?[\d\s-()]+$/, 'Invalid phone number');
-          break;
-        case 'checkbox':
-          fieldSchema = z.boolean();
-          break;
-        case 'multiselect':
-          fieldSchema = z.array(z.string());
-          break;
-        case 'file':
-          fieldSchema = z.instanceof(FileList).optional();
-          break;
-        default:
-          fieldSchema = z.string();
-      }
-
-      if (field.required && field.type !== 'checkbox') {
-        fieldSchema = fieldSchema.min(1, 'This field is required');
-      }
-
-      schemaObject[field.id] = fieldSchema;
-    });
-
-    return z.object(schemaObject);
-  };
-
-  const schema = buildSchema();
-  type FormData = z.infer<typeof schema>;
-
   const {
+    form,
+    fields,
+    loading,
+    submitting,
+    submitted,
+    formError,
     register,
     handleSubmit,
-    formState: { errors },
+    errors,
     setValue,
     watch,
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
-
-  const onSubmit = async (data: FormData) => {
-    if (!form) return;
-
-    setSubmitting(true);
-    try {
-      // Handle file uploads
-      const submissionData: Record<string, any> = {};
-
-      for (const [key, value] of Object.entries(data)) {
-        const field = fields.find((f) => f.id === key);
-        if (field?.type === 'file' && value instanceof FileList && value.length > 0) {
-          // Upload file to Supabase Storage
-          const file = value[0];
-          const fileExt = file.name.split('.').pop();
-          const fileName = `${Math.random()}.${fileExt}`;
-          const filePath = `form-uploads/${form.id}/${fileName}`;
-
-          const { error: uploadError } = await supabase.storage
-            .from('form-files')
-            .upload(filePath, file);
-
-          if (uploadError) throw uploadError;
-
-          const { data: { publicUrl } } = supabase.storage
-            .from('form-files')
-            .getPublicUrl(filePath);
-
-          submissionData[key] = publicUrl;
-        } else {
-          submissionData[key] = value;
-        }
-      }
-
-      // Save submission
-      const { error: submitError } = await supabase
-        .from('submissions')
-        .insert({
-          form_id: form.id,
-          data: submissionData,
-        });
-
-      if (submitError) throw submitError;
-
-      // Trigger webhooks
-      const { data: webhooks } = await supabase
-        .from('webhooks')
-        .select('*')
-        .eq('form_id', form.id)
-        .eq('is_active', true);
-
-      if (webhooks && webhooks.length > 0) {
-        // Trigger webhooks asynchronously (in production, use a background job)
-        webhooks.forEach(async (webhook) => {
-          try {
-            await fetch(webhook.url, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                ...(webhook.secret && { 'X-Webhook-Secret': webhook.secret }),
-              },
-              body: JSON.stringify({
-                form_id: form.id,
-                form_title: form.title,
-                submission: submissionData,
-                submitted_at: new Date().toISOString(),
-              }),
-            });
-          } catch (error) {
-            console.error('Webhook error:', error);
-          }
-        });
-      }
-
-      setSubmitted(true);
-      toast({
-        title: 'Success',
-        description: 'Form submitted successfully!',
-      });
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  } = useFormView();
 
   const renderField = (field: FormField) => {
     const widthClasses = {
@@ -508,7 +324,7 @@ const FormView = () => {
     );
   }
 
-  if (!form) {
+  if (formError || !form) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
@@ -548,7 +364,7 @@ const FormView = () => {
             )}
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {fields.map((field) => renderField(field))}
               </div>
@@ -573,4 +389,3 @@ const FormView = () => {
 };
 
 export default FormView;
-

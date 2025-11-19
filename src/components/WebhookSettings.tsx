@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react';
-import { supabase, Webhook } from '@/lib/supabase';
+import { useWebhookSettings } from '@/hooks/useWebhookSettings';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from '@/hooks/use-toast';
-import { Plus, Trash2, ExternalLink } from 'lucide-react';
+import { Trash2, ExternalLink, Plus } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,125 +22,24 @@ interface WebhookSettingsProps {
 }
 
 const WebhookSettings = ({ formId }: WebhookSettingsProps) => {
-  const [webhooks, setWebhooks] = useState<Webhook[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [newWebhookUrl, setNewWebhookUrl] = useState('');
-  const [newWebhookSecret, setNewWebhookSecret] = useState('');
-  const [adding, setAdding] = useState(false);
-
-  useEffect(() => {
-    loadWebhooks();
-  }, [formId]);
-
-  const loadWebhooks = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('webhooks')
-        .select('*')
-        .eq('form_id', formId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setWebhooks(data || []);
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const addWebhook = async () => {
-    if (!newWebhookUrl.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please enter a webhook URL',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    setAdding(true);
-    try {
-      const { data, error } = await supabase
-        .from('webhooks')
-        .insert({
-          form_id: formId,
-          url: newWebhookUrl.trim(),
-          secret: newWebhookSecret.trim() || null,
-          is_active: true,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      setWebhooks([data, ...webhooks]);
-      setNewWebhookUrl('');
-      setNewWebhookSecret('');
-      toast({
-        title: 'Success',
-        description: 'Webhook added successfully',
-      });
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } finally {
-      setAdding(false);
-    }
-  };
-
-  const toggleWebhook = async (webhookId: string, isActive: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('webhooks')
-        .update({ is_active: !isActive })
-        .eq('id', webhookId);
-
-      if (error) throw error;
-      setWebhooks(
-        webhooks.map((w) => (w.id === webhookId ? { ...w, is_active: !isActive } : w))
-      );
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const deleteWebhook = async (webhookId: string) => {
-    try {
-      const { error } = await supabase.from('webhooks').delete().eq('id', webhookId);
-
-      if (error) throw error;
-      setWebhooks(webhooks.filter((w) => w.id !== webhookId));
-      toast({
-        title: 'Success',
-        description: 'Webhook deleted successfully',
-      });
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    }
-  };
+  const {
+    webhooks,
+    isLoading,
+    newWebhookUrl,
+    setNewWebhookUrl,
+    newWebhookSecret,
+    setNewWebhookSecret,
+    addWebhook,
+    toggleWebhook,
+    deleteWebhook,
+    isAdding,
+  } = useWebhookSettings(formId);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Webhooks</CardTitle>
-        <CardDescription>
-          Receive notifications when forms are submitted
-        </CardDescription>
+        <CardDescription>Receive notifications when forms are submitted</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
@@ -163,13 +60,15 @@ const WebhookSettings = ({ formId }: WebhookSettingsProps) => {
             type="password"
           />
         </div>
-        <Button onClick={addWebhook} disabled={adding} className="w-full">
+        <Button onClick={addWebhook} disabled={isAdding} className="w-full">
           <Plus className="h-4 w-4 mr-2" />
-          {adding ? 'Adding...' : 'Add Webhook'}
+          {isAdding ? 'Adding...' : 'Add Webhook'}
         </Button>
 
         <div className="space-y-2 pt-4 border-t">
-          {webhooks.length === 0 ? (
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground text-center py-4">Loading...</p>
+          ) : webhooks.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-4">
               No webhooks configured
             </p>
@@ -232,4 +131,3 @@ const WebhookSettings = ({ formId }: WebhookSettingsProps) => {
 };
 
 export default WebhookSettings;
-

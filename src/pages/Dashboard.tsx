@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase, Form } from '@/lib/supabase';
+import { useAuth } from '@/hooks/useAuth';
+import { useDashboard } from '@/hooks/useDashboard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from '@/hooks/use-toast';
 import { Plus, FileText, Eye, Settings, LogOut, Trash2 } from 'lucide-react';
 import {
   AlertDialog,
@@ -20,8 +19,7 @@ import {
 
 const Dashboard = () => {
   const { user, loading: authLoading, signOut } = useAuth();
-  const [forms, setForms] = useState<Form[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { forms, isLoading, createForm, deleteForm, isCreating } = useDashboard();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,98 +28,12 @@ const Dashboard = () => {
     }
   }, [user, authLoading, navigate]);
 
-  useEffect(() => {
-    if (user) {
-      loadForms();
-    }
-  }, [user]);
-
-  const loadForms = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('forms')
-        .select('*')
-        .eq('user_id', user?.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setForms(data || []);
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const createForm = async () => {
-    try {
-      // Generate a unique slug
-      const baseSlug = 'form-' + Date.now().toString(36);
-      let slug = baseSlug;
-      let attempts = 0;
-      
-      // Check if slug exists and generate a new one if needed
-      while (attempts < 10) {
-        const { data: existing } = await supabase
-          .from('forms')
-          .select('id')
-          .eq('slug', slug)
-          .single();
-        
-        if (!existing) break;
-        slug = `${baseSlug}-${Math.random().toString(36).substring(2, 7)}`;
-        attempts++;
-      }
-
-      const { data, error } = await supabase
-        .from('forms')
-        .insert({
-          title: 'Untitled Form',
-          slug,
-          user_id: user?.id,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      navigate(`/forms/${data.id}/edit`);
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const deleteForm = async (id: string) => {
-    try {
-      const { error } = await supabase.from('forms').delete().eq('id', id);
-      if (error) throw error;
-      toast({
-        title: 'Success',
-        description: 'Form deleted successfully',
-      });
-      loadForms();
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-    }
-  };
-
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
   };
 
-  if (authLoading || loading) {
+  if (authLoading || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-muted-foreground">Loading...</div>
@@ -156,7 +68,7 @@ const Dashboard = () => {
             <h2 className="text-3xl font-bold mb-2">My Forms</h2>
             <p className="text-muted-foreground">Create and manage your forms</p>
           </div>
-          <Button onClick={createForm} size="lg">
+          <Button onClick={createForm} size="lg" disabled={isCreating}>
             <Plus className="h-4 w-4 mr-2" />
             Create Form
           </Button>
@@ -170,7 +82,7 @@ const Dashboard = () => {
               <p className="text-muted-foreground mb-6 text-center">
                 Get started by creating your first form
               </p>
-              <Button onClick={createForm}>
+              <Button onClick={createForm} disabled={isCreating}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create Your First Form
               </Button>
@@ -252,4 +164,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-

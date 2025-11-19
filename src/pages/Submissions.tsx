@@ -1,7 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase, Form, Submission, FormField } from '@/lib/supabase';
+import { useNavigate } from 'react-router-dom';
+import { useSubmissions } from '@/hooks/useSubmissions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -13,122 +11,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { ArrowLeft, Download, Settings } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
 import WebhookSettings from '@/components/WebhookSettings';
 
 const Submissions = () => {
-  const { id } = useParams<{ id: string }>();
-  const { user } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState<Form | null>(null);
-  const [fields, setFields] = useState<FormField[]>([]);
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (id && user) {
-      loadData();
-    }
-  }, [id, user]);
-
-  const loadData = async () => {
-    try {
-      // Load form
-      const { data: formData, error: formError } = await supabase
-        .from('forms')
-        .select('*')
-        .eq('id', id)
-        .eq('user_id', user?.id)
-        .single();
-
-      if (formError) throw formError;
-      setForm(formData);
-
-      // Load fields
-      const { data: fieldsData, error: fieldsError } = await supabase
-        .from('form_fields')
-        .select('*')
-        .eq('form_id', id)
-        .order('order_index', { ascending: true });
-
-      if (fieldsError) throw fieldsError;
-      setFields(fieldsData || []);
-
-      // Load submissions
-      const { data: submissionsData, error: submissionsError } = await supabase
-        .from('submissions')
-        .select('*')
-        .eq('form_id', id)
-        .order('submitted_at', { ascending: false });
-
-      if (submissionsError) throw submissionsError;
-      setSubmissions(submissionsData || []);
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-      navigate('/dashboard');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const exportCSV = () => {
-    if (submissions.length === 0) {
-      toast({
-        title: 'No data',
-        description: 'No submissions to export',
-      });
-      return;
-    }
-
-    const headers = fields
-      .filter((f) => !['header', 'paragraph', 'link', 'separator'].includes(f.type))
-      .map((f) => f.label);
-
-    const rows = submissions.map((submission) => {
-      return fields
-        .filter((f) => !['header', 'paragraph', 'link', 'separator'].includes(f.type))
-        .map((f) => {
-          const value = submission.data[f.id];
-          if (Array.isArray(value)) {
-            return value.join(', ');
-          }
-          if (typeof value === 'object' && value !== null) {
-            return JSON.stringify(value);
-          }
-          return value || '';
-        });
-    });
-
-    const csvContent = [
-      headers.join(','),
-      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(',')),
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${form?.title || 'submissions'}-${Date.now()}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-
-    toast({
-      title: 'Success',
-      description: 'CSV exported successfully',
-    });
-  };
-
-  const formatValue = (value: any): string => {
-    if (value === null || value === undefined) return '-';
-    if (Array.isArray(value)) return value.join(', ');
-    if (typeof value === 'object') return JSON.stringify(value);
-    if (typeof value === 'boolean') return value ? 'Yes' : 'No';
-    return String(value);
-  };
+  const { form, fields, submissions, loading, formError, formatValue, exportCSV } = useSubmissions();
 
   if (loading) {
     return (
@@ -138,13 +25,9 @@ const Submissions = () => {
     );
   }
 
-  if (!form) {
+  if (formError || !form) {
     return null;
   }
-
-  const dataFields = fields.filter(
-    (f) => !['header', 'paragraph', 'link', 'separator'].includes(f.type)
-  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -195,7 +78,7 @@ const Submissions = () => {
                       <TableHeader>
                         <TableRow>
                           <TableHead>Date</TableHead>
-                          {dataFields.map((field) => (
+                          {fields.map((field) => (
                             <TableHead key={field.id}>{field.label}</TableHead>
                           ))}
                         </TableRow>
@@ -206,7 +89,7 @@ const Submissions = () => {
                             <TableCell>
                               {new Date(submission.submitted_at).toLocaleString()}
                             </TableCell>
-                            {dataFields.map((field) => (
+                            {fields.map((field) => (
                               <TableCell key={field.id}>
                                 {formatValue(submission.data[field.id])}
                               </TableCell>
@@ -231,4 +114,3 @@ const Submissions = () => {
 };
 
 export default Submissions;
-
