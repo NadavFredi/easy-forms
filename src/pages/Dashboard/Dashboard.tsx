@@ -36,7 +36,7 @@ const Dashboard = () => {
   if (authLoading || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-muted-foreground">Loading...</div>
+        <div className="text-muted-foreground">טוען...</div>
       </div>
     );
   }
@@ -50,12 +50,12 @@ const Dashboard = () => {
       <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">Easy Forms</h1>
+            <h1 className="text-2xl font-bold">Easy Forms - בונה טפסים</h1>
             <div className="flex items-center gap-4">
               <span className="text-sm text-muted-foreground">{user.email}</span>
               <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign out
+                <LogOut className="h-4 w-4 ml-2" />
+                התנתק
               </Button>
             </div>
           </div>
@@ -65,12 +65,12 @@ const Dashboard = () => {
       <div className="container mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-3xl font-bold mb-2">My Forms</h2>
-            <p className="text-muted-foreground">Create and manage your forms</p>
+            <h2 className="text-3xl font-bold mb-2">הטפסים שלי</h2>
+            <p className="text-muted-foreground">צור ונהל את הטפסים שלך</p>
           </div>
           <Button onClick={createForm} size="lg" disabled={isCreating}>
-            <Plus className="h-4 w-4 mr-2" />
-            Create Form
+            <Plus className="h-4 w-4 ml-2" />
+            צור טופס
           </Button>
         </div>
 
@@ -78,13 +78,13 @@ const Dashboard = () => {
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-16">
               <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-xl font-semibold mb-2">No forms yet</h3>
+              <h3 className="text-xl font-semibold mb-2">אין עדיין טפסים</h3>
               <p className="text-muted-foreground mb-6 text-center">
-                Get started by creating your first form
+                התחל על ידי יצירת הטופס הראשון שלך
               </p>
               <Button onClick={createForm} disabled={isCreating}>
-                <Plus className="h-4 w-4 mr-2" />
-                Create Your First Form
+                <Plus className="h-4 w-4 ml-2" />
+                צור את הטופס הראשון שלך
               </Button>
             </CardContent>
           </Card>
@@ -96,9 +96,9 @@ const Dashboard = () => {
                   <CardTitle className="line-clamp-1">{form.title}</CardTitle>
                   <CardDescription>
                     {form.is_published ? (
-                      <span className="text-green-600">Published</span>
+                      <span className="text-green-600">פורסם</span>
                     ) : (
-                      <span className="text-muted-foreground">Draft</span>
+                      <span className="text-muted-foreground">טיוטה</span>
                     )}
                   </CardDescription>
                 </CardHeader>
@@ -110,8 +110,8 @@ const Dashboard = () => {
                       className="flex-1"
                       onClick={() => navigate(`/forms/${form.id}/edit`)}
                     >
-                      <Settings className="h-4 w-4 mr-2" />
-                      Edit
+                      <Settings className="h-4 w-4 ml-2" />
+                      ערוך
                     </Button>
                     <Button
                       variant="outline"
@@ -119,8 +119,8 @@ const Dashboard = () => {
                       className="flex-1"
                       onClick={() => window.open(`/f/${form.slug}`, '_blank')}
                     >
-                      <Eye className="h-4 w-4 mr-2" />
-                      View
+                      <Eye className="h-4 w-4 ml-2" />
+                      צפה
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
@@ -130,16 +130,16 @@ const Dashboard = () => {
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                          <AlertDialogTitle>האם אתה בטוח?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete your form
-                            and all its submissions.
+                            פעולה זו לא ניתנת לביטול. זה ימחק לצמיתות את הטופס שלך
+                            ואת כל ההגשות שלו.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogCancel>ביטול</AlertDialogCancel>
                           <AlertDialogAction onClick={() => deleteForm(form.id)}>
-                            Delete
+                            מחק
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -151,7 +151,7 @@ const Dashboard = () => {
                     className="w-full mt-2"
                     onClick={() => navigate(`/forms/${form.id}/submissions`)}
                   >
-                    View Submissions
+                    צפה בהגשות
                   </Button>
                 </CardContent>
               </Card>
@@ -164,4 +164,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-

@@ -19,8 +19,8 @@ export const useWebhookSettings = (formId: string) => {
   const addWebhook = async () => {
     if (!newWebhookUrl.trim()) {
       toast({
-        title: 'Error',
-        description: 'Please enter a webhook URL',
+        title: 'שגיאה',
+        description: 'אנא הזן כתובת webhook',
         variant: 'destructive',
       });
       return;
@@ -37,13 +37,13 @@ export const useWebhookSettings = (formId: string) => {
       setNewWebhookUrl('');
       setNewWebhookSecret('');
       toast({
-        title: 'Success',
-        description: 'Webhook added successfully',
+        title: 'הצלחה',
+        description: 'Webhook נוסף בהצלחה',
       });
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to add webhook',
+        title: 'שגיאה',
+        description: error.message || 'נכשל בהוספת webhook',
         variant: 'destructive',
       });
     }
@@ -57,8 +57,8 @@ export const useWebhookSettings = (formId: string) => {
       }).unwrap();
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to update webhook',
+        title: 'שגיאה',
+        description: error.message || 'נכשל בעדכון webhook',
         variant: 'destructive',
       });
     }
@@ -68,13 +68,13 @@ export const useWebhookSettings = (formId: string) => {
     try {
       await deleteWebhookMutation({ id: webhookId, form_id: formId }).unwrap();
       toast({
-        title: 'Success',
-        description: 'Webhook deleted successfully',
+        title: 'הצלחה',
+        description: 'Webhook נמחק בהצלחה',
       });
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to delete webhook',
+        title: 'שגיאה',
+        description: error.message || 'נכשל במחיקת webhook',
         variant: 'destructive',
       });
     }

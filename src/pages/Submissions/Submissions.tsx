@@ -20,7 +20,7 @@ const Submissions = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-muted-foreground">Loading...</div>
+        <div className="text-muted-foreground">טוען...</div>
       </div>
     );
   }
@@ -36,22 +36,22 @@ const Submissions = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
+                <ArrowLeft className="h-4 w-4 ml-2" />
+                חזור
               </Button>
               <div>
                 <h1 className="text-2xl font-bold">{form.title}</h1>
-                <p className="text-sm text-muted-foreground">Submissions</p>
+                <p className="text-sm text-muted-foreground">הגשות</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" onClick={exportCSV}>
-                <Download className="h-4 w-4 mr-2" />
-                Export CSV
+                <Download className="h-4 w-4 ml-2" />
+                ייצא CSV
               </Button>
               <Button variant="outline" onClick={() => navigate(`/forms/${form.id}/edit`)}>
-                <Settings className="h-4 w-4 mr-2" />
-                Edit Form
+                <Settings className="h-4 w-4 ml-2" />
+                ערוך טופס
               </Button>
             </div>
           </div>
@@ -63,21 +63,21 @@ const Submissions = () => {
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>Submissions ({submissions.length})</CardTitle>
-                <CardDescription>View all form submissions</CardDescription>
+                <CardTitle>הגשות ({submissions.length})</CardTitle>
+                <CardDescription>צפה בכל הגשות הטופס</CardDescription>
               </CardHeader>
               <CardContent>
                 {submissions.length === 0 ? (
                   <div className="text-center py-12 text-muted-foreground">
-                    <p>No submissions yet</p>
-                    <p className="text-sm mt-2">Share your form to start receiving submissions</p>
+                    <p>אין עדיין הגשות</p>
+                    <p className="text-sm mt-2">שתף את הטופס שלך כדי להתחיל לקבל הגשות</p>
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Date</TableHead>
+                          <TableHead>תאריך</TableHead>
                           {fields.map((field) => (
                             <TableHead key={field.id}>{field.label}</TableHead>
                           ))}
@@ -87,7 +87,7 @@ const Submissions = () => {
                         {submissions.map((submission) => (
                           <TableRow key={submission.id}>
                             <TableCell>
-                              {new Date(submission.submitted_at).toLocaleString()}
+                              {new Date(submission.submitted_at).toLocaleString('he-IL')}
                             </TableCell>
                             {fields.map((field) => (
                               <TableCell key={field.id}>

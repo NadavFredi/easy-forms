@@ -34,21 +34,21 @@ export const useDashboard = () => {
       }
 
       const form = await createFormMutation({
-        title: 'Untitled Form',
+        title: 'טופס ללא כותרת',
         slug,
         user_id: user.id,
       }).unwrap();
 
       toast({
-        title: 'Success',
-        description: 'Form created successfully',
+        title: 'הצלחה',
+        description: 'הטופס נוצר בהצלחה',
       });
 
       navigate(`/forms/${form.id}/edit`);
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to create form',
+        title: 'שגיאה',
+        description: error.message || 'נכשל ביצירת הטופס',
         variant: 'destructive',
       });
     }
@@ -58,13 +58,13 @@ export const useDashboard = () => {
     try {
       await deleteFormMutation(id).unwrap();
       toast({
-        title: 'Success',
-        description: 'Form deleted successfully',
+        title: 'הצלחה',
+        description: 'הטופס נמחק בהצלחה',
       });
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to delete form',
+        title: 'שגיאה',
+        description: error.message || 'נכשל במחיקת הטופס',
         variant: 'destructive',
       });
     }
@@ -79,4 +79,3 @@ export const useDashboard = () => {
     isCreating,
   };
 };
-

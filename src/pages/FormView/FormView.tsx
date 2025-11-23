@@ -43,9 +43,9 @@ const FormView = () => {
       case 'password':
         return (
           <div key={field.id} className={cn('space-y-2', widthClasses[field.width])}>
-            <Label htmlFor={field.id}>
+            <Label htmlFor={field.id} className="text-right">
               {field.label}
-              {field.required && <span className="text-destructive ml-1">*</span>}
+              {field.required && <span className="text-destructive mr-1">*</span>}
             </Label>
             <Input
               id={field.id}
@@ -54,7 +54,7 @@ const FormView = () => {
               {...register(field.id)}
             />
             {errors[field.id] && (
-              <p className="text-sm text-destructive">{errors[field.id]?.message as string}</p>
+              <p className="text-sm text-destructive text-right">{errors[field.id]?.message as string}</p>
             )}
           </div>
         );
@@ -62,9 +62,9 @@ const FormView = () => {
       case 'number':
         return (
           <div key={field.id} className={cn('space-y-2', widthClasses[field.width])}>
-            <Label htmlFor={field.id}>
+            <Label htmlFor={field.id} className="text-right">
               {field.label}
-              {field.required && <span className="text-destructive ml-1">*</span>}
+              {field.required && <span className="text-destructive mr-1">*</span>}
             </Label>
             <Input
               id={field.id}
@@ -73,7 +73,7 @@ const FormView = () => {
               {...register(field.id)}
             />
             {errors[field.id] && (
-              <p className="text-sm text-destructive">{errors[field.id]?.message as string}</p>
+              <p className="text-sm text-destructive text-right">{errors[field.id]?.message as string}</p>
             )}
           </div>
         );
@@ -81,9 +81,9 @@ const FormView = () => {
       case 'textarea':
         return (
           <div key={field.id} className={cn('space-y-2', widthClasses[field.width])}>
-            <Label htmlFor={field.id}>
+            <Label htmlFor={field.id} className="text-right">
               {field.label}
-              {field.required && <span className="text-destructive ml-1">*</span>}
+              {field.required && <span className="text-destructive mr-1">*</span>}
             </Label>
             <Textarea
               id={field.id}
@@ -92,7 +92,7 @@ const FormView = () => {
               {...register(field.id)}
             />
             {errors[field.id] && (
-              <p className="text-sm text-destructive">{errors[field.id]?.message as string}</p>
+              <p className="text-sm text-destructive text-right">{errors[field.id]?.message as string}</p>
             )}
           </div>
         );
@@ -100,16 +100,16 @@ const FormView = () => {
       case 'select':
         return (
           <div key={field.id} className={cn('space-y-2', widthClasses[field.width])}>
-            <Label htmlFor={field.id}>
+            <Label htmlFor={field.id} className="text-right">
               {field.label}
-              {field.required && <span className="text-destructive ml-1">*</span>}
+              {field.required && <span className="text-destructive mr-1">*</span>}
             </Label>
             <Select
               onValueChange={(value) => setValue(field.id, value)}
               {...register(field.id)}
             >
               <SelectTrigger id={field.id}>
-                <SelectValue placeholder={field.placeholder || 'Select an option'} />
+                <SelectValue placeholder={field.placeholder || 'בחר אפשרות'} />
               </SelectTrigger>
               <SelectContent>
                 {(field.options?.options || []).map((option: string, index: number) => (
@@ -120,7 +120,7 @@ const FormView = () => {
               </SelectContent>
             </Select>
             {errors[field.id] && (
-              <p className="text-sm text-destructive">{errors[field.id]?.message as string}</p>
+              <p className="text-sm text-destructive text-right">{errors[field.id]?.message as string}</p>
             )}
           </div>
         );
@@ -128,9 +128,9 @@ const FormView = () => {
       case 'multiselect':
         return (
           <div key={field.id} className={cn('space-y-2', widthClasses[field.width])}>
-            <Label>
+            <Label className="text-right">
               {field.label}
-              {field.required && <span className="text-destructive ml-1">*</span>}
+              {field.required && <span className="text-destructive mr-1">*</span>}
             </Label>
             <div className="space-y-2">
               {(field.options?.options || []).map((option: string, index: number) => (
@@ -154,7 +154,7 @@ const FormView = () => {
               ))}
             </div>
             {errors[field.id] && (
-              <p className="text-sm text-destructive">{errors[field.id]?.message as string}</p>
+              <p className="text-sm text-destructive text-right">{errors[field.id]?.message as string}</p>
             )}
           </div>
         );
@@ -167,13 +167,13 @@ const FormView = () => {
                 id={field.id}
                 {...register(field.id)}
               />
-              <Label htmlFor={field.id} className="font-normal">
+              <Label htmlFor={field.id} className="font-normal text-right">
                 {field.label}
-                {field.required && <span className="text-destructive ml-1">*</span>}
+                {field.required && <span className="text-destructive mr-1">*</span>}
               </Label>
             </div>
             {errors[field.id] && (
-              <p className="text-sm text-destructive">{errors[field.id]?.message as string}</p>
+              <p className="text-sm text-destructive text-right">{errors[field.id]?.message as string}</p>
             )}
           </div>
         );
@@ -181,9 +181,9 @@ const FormView = () => {
       case 'radio':
         return (
           <div key={field.id} className={cn('space-y-2', widthClasses[field.width])}>
-            <Label>
+            <Label className="text-right">
               {field.label}
-              {field.required && <span className="text-destructive ml-1">*</span>}
+              {field.required && <span className="text-destructive mr-1">*</span>}
             </Label>
             <RadioGroup
               onValueChange={(value) => setValue(field.id, value)}
@@ -199,7 +199,7 @@ const FormView = () => {
               ))}
             </RadioGroup>
             {errors[field.id] && (
-              <p className="text-sm text-destructive">{errors[field.id]?.message as string}</p>
+              <p className="text-sm text-destructive text-right">{errors[field.id]?.message as string}</p>
             )}
           </div>
         );
@@ -207,9 +207,9 @@ const FormView = () => {
       case 'file':
         return (
           <div key={field.id} className={cn('space-y-2', widthClasses[field.width])}>
-            <Label htmlFor={field.id}>
+            <Label htmlFor={field.id} className="text-right">
               {field.label}
-              {field.required && <span className="text-destructive ml-1">*</span>}
+              {field.required && <span className="text-destructive mr-1">*</span>}
             </Label>
             <Input
               id={field.id}
@@ -217,7 +217,7 @@ const FormView = () => {
               {...register(field.id)}
             />
             {errors[field.id] && (
-              <p className="text-sm text-destructive">{errors[field.id]?.message as string}</p>
+              <p className="text-sm text-destructive text-right">{errors[field.id]?.message as string}</p>
             )}
           </div>
         );
@@ -225,9 +225,9 @@ const FormView = () => {
       case 'date':
         return (
           <div key={field.id} className={cn('space-y-2', widthClasses[field.width])}>
-            <Label htmlFor={field.id}>
+            <Label htmlFor={field.id} className="text-right">
               {field.label}
-              {field.required && <span className="text-destructive ml-1">*</span>}
+              {field.required && <span className="text-destructive mr-1">*</span>}
             </Label>
             <Input
               id={field.id}
@@ -235,7 +235,7 @@ const FormView = () => {
               {...register(field.id)}
             />
             {errors[field.id] && (
-              <p className="text-sm text-destructive">{errors[field.id]?.message as string}</p>
+              <p className="text-sm text-destructive text-right">{errors[field.id]?.message as string}</p>
             )}
           </div>
         );
@@ -243,9 +243,9 @@ const FormView = () => {
       case 'time':
         return (
           <div key={field.id} className={cn('space-y-2', widthClasses[field.width])}>
-            <Label htmlFor={field.id}>
+            <Label htmlFor={field.id} className="text-right">
               {field.label}
-              {field.required && <span className="text-destructive ml-1">*</span>}
+              {field.required && <span className="text-destructive mr-1">*</span>}
             </Label>
             <Input
               id={field.id}
@@ -253,7 +253,7 @@ const FormView = () => {
               {...register(field.id)}
             />
             {errors[field.id] && (
-              <p className="text-sm text-destructive">{errors[field.id]?.message as string}</p>
+              <p className="text-sm text-destructive text-right">{errors[field.id]?.message as string}</p>
             )}
           </div>
         );
@@ -261,9 +261,9 @@ const FormView = () => {
       case 'datetime':
         return (
           <div key={field.id} className={cn('space-y-2', widthClasses[field.width])}>
-            <Label htmlFor={field.id}>
+            <Label htmlFor={field.id} className="text-right">
               {field.label}
-              {field.required && <span className="text-destructive ml-1">*</span>}
+              {field.required && <span className="text-destructive mr-1">*</span>}
             </Label>
             <Input
               id={field.id}
@@ -271,7 +271,7 @@ const FormView = () => {
               {...register(field.id)}
             />
             {errors[field.id] && (
-              <p className="text-sm text-destructive">{errors[field.id]?.message as string}</p>
+              <p className="text-sm text-destructive text-right">{errors[field.id]?.message as string}</p>
             )}
           </div>
         );
@@ -329,8 +329,8 @@ const FormView = () => {
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle>Form Not Found</CardTitle>
-            <CardDescription>The form you're looking for doesn't exist or isn't published.</CardDescription>
+            <CardTitle>טופס לא נמצא</CardTitle>
+            <CardDescription>הטופס שאתה מחפש לא קיים או לא פורסם.</CardDescription>
           </CardHeader>
         </Card>
       </div>
@@ -343,9 +343,9 @@ const FormView = () => {
         <Card className="w-full max-w-md">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <CheckCircle2 className="h-16 w-16 text-green-600 mb-4" />
-            <h2 className="text-2xl font-bold mb-2">Thank You!</h2>
+            <h2 className="text-2xl font-bold mb-2">תודה רבה!</h2>
             <p className="text-muted-foreground text-center">
-              Your submission has been received successfully.
+              ההגשה שלך התקבלה בהצלחה.
             </p>
           </CardContent>
         </Card>
@@ -368,15 +368,15 @@ const FormView = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {fields.map((field) => renderField(field))}
               </div>
-              <div className="flex justify-end pt-4">
+              <div className="flex justify-start pt-4">
                 <Button type="submit" size="lg" disabled={submitting}>
                   {submitting ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Submitting...
+                      <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                      שולח...
                     </>
                   ) : (
-                    'Submit'
+                    'שלח'
                   )}
                 </Button>
               </div>

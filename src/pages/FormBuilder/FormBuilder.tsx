@@ -93,14 +93,14 @@ function SortableField({ field, isSelected, onSelect, onDelete }: SortableFieldP
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete Field?</AlertDialogTitle>
+              <AlertDialogTitle>למחוק שדה?</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete this field.
+                פעולה זו לא ניתנת לביטול. זה ימחק לצמיתות את השדה הזה.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={onDelete}>Delete</AlertDialogAction>
+              <AlertDialogCancel>ביטול</AlertDialogCancel>
+              <AlertDialogAction onClick={onDelete}>מחק</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
@@ -191,7 +191,7 @@ const FormBuilder = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-muted-foreground">Loading...</div>
+        <div className="text-muted-foreground">טוען...</div>
       </div>
     );
   }
@@ -207,14 +207,14 @@ const FormBuilder = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
+                <ArrowLeft className="h-4 w-4 ml-2" />
+                חזור
               </Button>
               <Input
                 value={localForm.title}
                 onChange={(e) => setLocalForm({ ...localForm, title: e.target.value })}
                 className="text-xl font-bold border-0 focus-visible:ring-0 p-0 h-auto"
-                placeholder="Form Title"
+                placeholder="כותרת הטופס"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -222,12 +222,12 @@ const FormBuilder = () => {
                 variant="outline"
                 onClick={() => window.open(`/f/${localForm.slug}`, '_blank')}
               >
-                <Eye className="h-4 w-4 mr-2" />
-                Preview
+                <Eye className="h-4 w-4 ml-2" />
+                תצוגה מקדימה
               </Button>
               <Button onClick={saveForm} disabled={saving}>
-                <Save className="h-4 w-4 mr-2" />
-                {saving ? 'Saving...' : 'Save'}
+                <Save className="h-4 w-4 ml-2" />
+                {saving ? 'שומר...' : 'שמור'}
               </Button>
             </div>
           </div>
@@ -239,25 +239,25 @@ const FormBuilder = () => {
           {/* Left Sidebar - Field Types */}
           <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-semibold mb-4">Add Field</h3>
+              <h3 className="text-lg font-semibold mb-4">הוסף שדה</h3>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { type: 'text', label: 'Text' },
-                  { type: 'email', label: 'Email' },
-                  { type: 'number', label: 'Number' },
-                  { type: 'textarea', label: 'Textarea' },
-                  { type: 'select', label: 'Select' },
-                  { type: 'multiselect', label: 'Multi-Select' },
-                  { type: 'checkbox', label: 'Checkbox' },
-                  { type: 'radio', label: 'Radio' },
-                  { type: 'file', label: 'File' },
-                  { type: 'date', label: 'Date' },
-                  { type: 'time', label: 'Time' },
-                  { type: 'url', label: 'URL' },
-                  { type: 'header', label: 'Header' },
-                  { type: 'paragraph', label: 'Paragraph' },
-                  { type: 'link', label: 'Link' },
-                  { type: 'separator', label: 'Separator' },
+                  { type: 'text', label: 'טקסט' },
+                  { type: 'email', label: 'אימייל' },
+                  { type: 'number', label: 'מספר' },
+                  { type: 'textarea', label: 'אזור טקסט' },
+                  { type: 'select', label: 'בחירה' },
+                  { type: 'multiselect', label: 'בחירה מרובה' },
+                  { type: 'checkbox', label: 'תיבת סימון' },
+                  { type: 'radio', label: 'רדיו' },
+                  { type: 'file', label: 'קובץ' },
+                  { type: 'date', label: 'תאריך' },
+                  { type: 'time', label: 'שעה' },
+                  { type: 'url', label: 'קישור' },
+                  { type: 'header', label: 'כותרת' },
+                  { type: 'paragraph', label: 'פסקה' },
+                  { type: 'link', label: 'קישור חיצוני' },
+                  { type: 'separator', label: 'מפריד' },
                 ].map(({ type, label }) => (
                   <Button
                     key={type}
@@ -266,7 +266,7 @@ const FormBuilder = () => {
                     onClick={() => addField(type as FieldType)}
                     className="justify-start"
                   >
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="h-4 w-4 ml-2" />
                     {label}
                   </Button>
                 ))}
@@ -275,21 +275,21 @@ const FormBuilder = () => {
 
             {/* Form Settings */}
             <div className="space-y-4 border-t pt-4">
-              <h3 className="text-lg font-semibold">Form Settings</h3>
+              <h3 className="text-lg font-semibold">הגדרות טופס</h3>
               <div className="space-y-2">
-                <Label>Slug</Label>
+                <Label>כתובת URL</Label>
                 <Input
                   value={localForm.slug}
                   onChange={(e) => setLocalForm({ ...localForm, slug: e.target.value })}
-                  placeholder="form-slug"
+                  placeholder="כתובת-טופס"
                 />
               </div>
               <div className="space-y-2">
-                <Label>Description</Label>
+                <Label>תיאור</Label>
                 <Textarea
                   value={localForm.description || ''}
                   onChange={(e) => setLocalForm({ ...localForm, description: e.target.value })}
-                  placeholder="Form description"
+                  placeholder="תיאור הטופס"
                   rows={3}
                 />
               </div>
@@ -301,19 +301,19 @@ const FormBuilder = () => {
                     setLocalForm({ ...localForm, is_published: checked })
                   }
                 />
-                <Label htmlFor="published">Published</Label>
+                <Label htmlFor="published">פורסם</Label>
               </div>
             </div>
           </div>
 
           {/* Center - Form Preview */}
           <div className="lg:col-span-1">
-            <h3 className="text-lg font-semibold mb-4">Form Preview</h3>
+            <h3 className="text-lg font-semibold mb-4">תצוגה מקדימה</h3>
             <div className="border rounded-lg p-6 bg-accent/30 min-h-[400px]">
               {localFields.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
-                  <p className="mb-4">No fields yet</p>
-                  <p className="text-sm">Add fields from the left sidebar</p>
+                  <p className="mb-4">אין עדיין שדות</p>
+                  <p className="text-sm">הוסף שדות מהסרגל הצד</p>
                 </div>
               ) : (
                 <DndContext
@@ -344,7 +344,7 @@ const FormBuilder = () => {
 
           {/* Right Sidebar - Field Editor */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Field Settings</h3>
+            <h3 className="text-lg font-semibold mb-4">הגדרות שדה</h3>
             {selectedField ? (
               <FieldEditor
                 field={selectedField}
@@ -352,7 +352,7 @@ const FormBuilder = () => {
               />
             ) : (
               <div className="border rounded-lg p-8 text-center text-muted-foreground">
-                <p>Select a field to edit</p>
+                <p>בחר שדה לעריכה</p>
               </div>
             )}
           </div>

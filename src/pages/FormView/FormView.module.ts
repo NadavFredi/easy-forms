@@ -41,16 +41,16 @@ export const useFormView = () => {
 
       switch (field.type) {
         case 'email':
-          fieldSchema = z.string().email('Invalid email address');
+          fieldSchema = z.string().email('כתובת אימייל לא תקינה');
           break;
         case 'number':
           fieldSchema = z.coerce.number();
           break;
         case 'url':
-          fieldSchema = z.string().url('Invalid URL');
+          fieldSchema = z.string().url('כתובת URL לא תקינה');
           break;
         case 'tel':
-          fieldSchema = z.string().regex(/^\+?[\d\s-()]+$/, 'Invalid phone number');
+          fieldSchema = z.string().regex(/^\+?[\d\s-()]+$/, 'מספר טלפון לא תקין');
           break;
         case 'checkbox':
           fieldSchema = z.boolean();
@@ -66,7 +66,7 @@ export const useFormView = () => {
       }
 
       if (field.required && field.type !== 'checkbox') {
-        fieldSchema = fieldSchema.min(1, 'This field is required');
+        fieldSchema = fieldSchema.min(1, 'שדה זה חובה');
       }
 
       schemaObject[field.id] = fieldSchema;
@@ -151,13 +151,13 @@ export const useFormView = () => {
 
       setSubmitted(true);
       toast({
-        title: 'Success',
-        description: 'Form submitted successfully!',
+        title: 'הצלחה',
+        description: 'הטופס נשלח בהצלחה!',
       });
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to submit form',
+        title: 'שגיאה',
+        description: error.message || 'נכשל בשליחת הטופס',
         variant: 'destructive',
       });
     } finally {

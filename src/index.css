@@ -3,6 +3,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* RTL Support */
+html {
+  direction: rtl;
+}
+
+body {
+  direction: rtl;
+  text-align: right;
+}
+
 /* Enhanced Design System */
 @layer base {
   :root {
@@ -69,12 +79,14 @@
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground font-sans antialiased;
-  }
-
   html {
     scroll-behavior: smooth;
+    direction: rtl;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    direction: rtl;
   }
 }
 

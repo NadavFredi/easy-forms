@@ -36,7 +36,7 @@ const FieldEditor = ({ field, onChange }: FieldEditorProps) => {
   return (
     <div className="space-y-4 p-4 border rounded-lg bg-background">
       <div className="space-y-2">
-        <Label>Field Type</Label>
+        <Label>סוג שדה</Label>
         <Select
           value={field.type}
           onValueChange={(value) => onChange({ type: value as FieldType })}
@@ -45,58 +45,58 @@ const FieldEditor = ({ field, onChange }: FieldEditorProps) => {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="text">Text Input</SelectItem>
-            <SelectItem value="email">Email</SelectItem>
-            <SelectItem value="number">Number</SelectItem>
-            <SelectItem value="textarea">Textarea</SelectItem>
-            <SelectItem value="select">Select</SelectItem>
-            <SelectItem value="multiselect">Multi-Select</SelectItem>
-            <SelectItem value="checkbox">Checkbox</SelectItem>
-            <SelectItem value="radio">Radio</SelectItem>
-            <SelectItem value="file">File Upload</SelectItem>
-            <SelectItem value="date">Date</SelectItem>
-            <SelectItem value="time">Time</SelectItem>
-            <SelectItem value="datetime">Date & Time</SelectItem>
-            <SelectItem value="url">URL</SelectItem>
-            <SelectItem value="tel">Phone</SelectItem>
-            <SelectItem value="password">Password</SelectItem>
-            <SelectItem value="header">Header</SelectItem>
-            <SelectItem value="paragraph">Paragraph</SelectItem>
-            <SelectItem value="link">Link</SelectItem>
-            <SelectItem value="separator">Separator</SelectItem>
+            <SelectItem value="text">קלט טקסט</SelectItem>
+            <SelectItem value="email">אימייל</SelectItem>
+            <SelectItem value="number">מספר</SelectItem>
+            <SelectItem value="textarea">אזור טקסט</SelectItem>
+            <SelectItem value="select">בחירה</SelectItem>
+            <SelectItem value="multiselect">בחירה מרובה</SelectItem>
+            <SelectItem value="checkbox">תיבת סימון</SelectItem>
+            <SelectItem value="radio">רדיו</SelectItem>
+            <SelectItem value="file">העלאת קובץ</SelectItem>
+            <SelectItem value="date">תאריך</SelectItem>
+            <SelectItem value="time">שעה</SelectItem>
+            <SelectItem value="datetime">תאריך ושעה</SelectItem>
+            <SelectItem value="url">קישור</SelectItem>
+            <SelectItem value="tel">טלפון</SelectItem>
+            <SelectItem value="password">סיסמה</SelectItem>
+            <SelectItem value="header">כותרת</SelectItem>
+            <SelectItem value="paragraph">פסקה</SelectItem>
+            <SelectItem value="link">קישור חיצוני</SelectItem>
+            <SelectItem value="separator">מפריד</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       {!isContentField && (
         <div className="space-y-2">
-          <Label>Label</Label>
+          <Label>תווית</Label>
           <Input
             value={field.label}
             onChange={(e) => onChange({ label: e.target.value })}
-            placeholder="Field label"
+            placeholder="תווית שדה"
           />
         </div>
       )}
 
       {field.type === 'header' && (
         <div className="space-y-2">
-          <Label>Header Text</Label>
+          <Label>טקסט כותרת</Label>
           <Input
             value={field.label}
             onChange={(e) => onChange({ label: e.target.value })}
-            placeholder="Header text"
+            placeholder="טקסט כותרת"
           />
         </div>
       )}
 
       {field.type === 'paragraph' && (
         <div className="space-y-2">
-          <Label>Paragraph Text</Label>
+          <Label>טקסט פסקה</Label>
           <Textarea
             value={field.label}
             onChange={(e) => onChange({ label: e.target.value })}
-            placeholder="Paragraph text"
+            placeholder="טקסט פסקה"
             rows={4}
           />
         </div>
@@ -105,15 +105,15 @@ const FieldEditor = ({ field, onChange }: FieldEditorProps) => {
       {field.type === 'link' && (
         <>
           <div className="space-y-2">
-            <Label>Link Text</Label>
+            <Label>טקסט קישור</Label>
             <Input
               value={field.label}
               onChange={(e) => onChange({ label: e.target.value })}
-              placeholder="Link text"
+              placeholder="טקסט קישור"
             />
           </div>
           <div className="space-y-2">
-            <Label>URL</Label>
+            <Label>כתובת URL</Label>
             <Input
               value={field.options?.url || ''}
               onChange={(e) => onChange({ options: { ...field.options, url: e.target.value } })}
@@ -125,24 +125,24 @@ const FieldEditor = ({ field, onChange }: FieldEditorProps) => {
 
       {hasPlaceholder && (
         <div className="space-y-2">
-          <Label>Placeholder</Label>
+          <Label>טקסט מקום</Label>
           <Input
             value={field.placeholder || ''}
             onChange={(e) => onChange({ placeholder: e.target.value })}
-            placeholder="Placeholder text"
+            placeholder="טקסט מקום"
           />
         </div>
       )}
 
       {hasOptions && (
         <div className="space-y-2">
-          <Label>Options</Label>
+          <Label>אפשרויות</Label>
           {(field.options?.options || []).map((option: string, index: number) => (
             <div key={index} className="flex gap-2">
               <Input
                 value={option}
                 onChange={(e) => updateOptions(index, e.target.value)}
-                placeholder={`Option ${index + 1}`}
+                placeholder={`אפשרות ${index + 1}`}
               />
               <Button
                 type="button"
@@ -155,8 +155,8 @@ const FieldEditor = ({ field, onChange }: FieldEditorProps) => {
             </div>
           ))}
           <Button type="button" variant="outline" size="sm" onClick={addOption}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Option
+            <Plus className="h-4 w-4 ml-2" />
+            הוסף אפשרות
           </Button>
         </div>
       )}
@@ -168,12 +168,12 @@ const FieldEditor = ({ field, onChange }: FieldEditorProps) => {
             checked={field.required}
             onCheckedChange={(checked) => onChange({ required: checked })}
           />
-          <Label htmlFor="required">Required</Label>
+          <Label htmlFor="required">חובה</Label>
         </div>
       )}
 
       <div className="space-y-2">
-        <Label>Width</Label>
+        <Label>רוחב</Label>
         <Select
           value={field.width}
           onValueChange={(value: any) => onChange({ width: value })}
@@ -182,10 +182,10 @@ const FieldEditor = ({ field, onChange }: FieldEditorProps) => {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="full">Full Width</SelectItem>
-            <SelectItem value="half">Half Width</SelectItem>
-            <SelectItem value="third">Third Width</SelectItem>
-            <SelectItem value="quarter">Quarter Width</SelectItem>
+            <SelectItem value="full">רוחב מלא</SelectItem>
+            <SelectItem value="half">חצי רוחב</SelectItem>
+            <SelectItem value="third">שליש רוחב</SelectItem>
+            <SelectItem value="quarter">רבע רוחב</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -194,4 +194,3 @@ const FieldEditor = ({ field, onChange }: FieldEditorProps) => {
 };
 
 export default FieldEditor;
-

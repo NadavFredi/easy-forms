@@ -11,14 +11,14 @@ export const useLogin = () => {
 
     if (error) {
       toast({
-        title: 'Error',
+        title: 'שגיאה',
         description: error.message,
         variant: 'destructive',
       });
     } else {
       toast({
-        title: 'Success',
-        description: 'Logged in successfully!',
+        title: 'הצלחה',
+        description: 'התחברת בהצלחה!',
       });
       navigate('/dashboard');
     }
@@ -29,4 +29,3 @@ export const useLogin = () => {
     isSigningIn,
   };
 };
-

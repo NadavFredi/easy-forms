@@ -21,13 +21,13 @@ const Signup = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-accent/20 p-6">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
-          <CardDescription>Get started with Easy Forms</CardDescription>
+          <CardTitle className="text-2xl font-bold">צור חשבון</CardTitle>
+          <CardDescription>התחל עם Easy Forms</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">אימייל</Label>
               <Input
                 id="email"
                 type="email"
@@ -38,7 +38,7 @@ const Signup = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">סיסמה</Label>
               <Input
                 id="password"
                 type="password"
@@ -51,18 +51,18 @@ const Signup = () => {
             <Button type="submit" className="w-full" disabled={isSigningUp}>
               {isSigningUp ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating account...
+                  <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                  יוצר חשבון...
                 </>
               ) : (
-                'Sign up'
+                'הירשם'
               )}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
-            <span className="text-muted-foreground">Already have an account? </span>
+            <span className="text-muted-foreground">כבר יש לך חשבון? </span>
             <Link to="/login" className="text-primary hover:underline">
-              Sign in
+              התחבר
             </Link>
           </div>
         </CardContent>
@@ -72,4 +72,3 @@ const Signup = () => {
 };
 
 export default Signup;
-

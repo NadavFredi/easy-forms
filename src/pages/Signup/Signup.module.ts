@@ -11,14 +11,14 @@ export const useSignup = () => {
 
     if (error) {
       toast({
-        title: 'Error',
+        title: 'שגיאה',
         description: error.message,
         variant: 'destructive',
       });
     } else {
       toast({
-        title: 'Success',
-        description: 'Account created! Please check your email to verify your account.',
+        title: 'הצלחה',
+        description: 'החשבון נוצר! אנא בדוק את האימייל שלך כדי לאמת את החשבון.',
       });
       navigate('/dashboard');
     }
@@ -29,4 +29,3 @@ export const useSignup = () => {
     isSigningUp,
   };
 };
-

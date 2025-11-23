@@ -39,11 +39,11 @@ const WebhookSettings = ({ formId }: WebhookSettingsProps) => {
     <Card>
       <CardHeader>
         <CardTitle>Webhooks</CardTitle>
-        <CardDescription>Receive notifications when forms are submitted</CardDescription>
+        <CardDescription>קבל התראות כאשר טפסים מוגשים</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label>Webhook URL</Label>
+          <Label>כתובת Webhook</Label>
           <Input
             value={newWebhookUrl}
             onChange={(e) => setNewWebhookUrl(e.target.value)}
@@ -52,25 +52,25 @@ const WebhookSettings = ({ formId }: WebhookSettingsProps) => {
           />
         </div>
         <div className="space-y-2">
-          <Label>Secret (Optional)</Label>
+          <Label>סוד (אופציונלי)</Label>
           <Input
             value={newWebhookSecret}
             onChange={(e) => setNewWebhookSecret(e.target.value)}
-            placeholder="Webhook secret"
+            placeholder="סוד webhook"
             type="password"
           />
         </div>
         <Button onClick={addWebhook} disabled={isAdding} className="w-full">
-          <Plus className="h-4 w-4 mr-2" />
-          {isAdding ? 'Adding...' : 'Add Webhook'}
+          <Plus className="h-4 w-4 ml-2" />
+          {isAdding ? 'מוסיף...' : 'הוסף Webhook'}
         </Button>
 
         <div className="space-y-2 pt-4 border-t">
           {isLoading ? (
-            <p className="text-sm text-muted-foreground text-center py-4">Loading...</p>
+            <p className="text-sm text-muted-foreground text-center py-4">טוען...</p>
           ) : webhooks.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-4">
-              No webhooks configured
+              אין webhooks מוגדרים
             </p>
           ) : (
             webhooks.map((webhook) => (
@@ -96,7 +96,7 @@ const WebhookSettings = ({ formId }: WebhookSettingsProps) => {
                       onCheckedChange={() => toggleWebhook(webhook.id, webhook.is_active)}
                     />
                     <span className="text-xs text-muted-foreground">
-                      {webhook.is_active ? 'Active' : 'Inactive'}
+                      {webhook.is_active ? 'פעיל' : 'לא פעיל'}
                     </span>
                   </div>
                 </div>
@@ -108,15 +108,15 @@ const WebhookSettings = ({ formId }: WebhookSettingsProps) => {
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Webhook?</AlertDialogTitle>
+                      <AlertDialogTitle>למחוק Webhook?</AlertDialogTitle>
                       <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete this webhook.
+                        פעולה זו לא ניתנת לביטול. זה ימחק לצמיתות את ה-webhook הזה.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel>ביטול</AlertDialogCancel>
                       <AlertDialogAction onClick={() => deleteWebhook(webhook.id)}>
-                        Delete
+                        מחק
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>

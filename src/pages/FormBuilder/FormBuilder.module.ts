@@ -40,8 +40,8 @@ export const useFormBuilder = () => {
   useEffect(() => {
     if (form && user && form.user_id !== user.id) {
       toast({
-        title: 'Access Denied',
-        description: 'You do not have permission to edit this form',
+        title: 'גישה נדחתה',
+        description: 'אין לך הרשאה לערוך את הטופס הזה',
         variant: 'destructive',
       });
       navigate('/dashboard');
@@ -54,14 +54,14 @@ export const useFormBuilder = () => {
     const newField: Partial<FormField> = {
       form_id: id,
       type,
-      label: type === 'header' ? 'Header' : type === 'paragraph' ? 'Paragraph' : 'New Field',
+      label: type === 'header' ? 'כותרת' : type === 'paragraph' ? 'פסקה' : 'שדה חדש',
       placeholder: '',
       required: false,
       order_index: fields.length,
       width: 'full',
       options:
         type === 'select' || type === 'multiselect' || type === 'radio'
-          ? { options: ['Option 1', 'Option 2'] }
+          ? { options: ['אפשרות 1', 'אפשרות 2'] }
           : type === 'link'
             ? { url: '' }
             : undefined,
@@ -77,13 +77,13 @@ export const useFormBuilder = () => {
     try {
       await deleteFieldMutation({ id: fieldId, form_id: id }).unwrap();
       toast({
-        title: 'Success',
-        description: 'Field deleted successfully',
+        title: 'הצלחה',
+        description: 'השדה נמחק בהצלחה',
       });
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to delete field',
+        title: 'שגיאה',
+        description: error.message || 'נכשל במחיקת השדה',
         variant: 'destructive',
       });
       throw error;
@@ -118,11 +118,11 @@ export const useFormBuilder = () => {
           fields: fieldsToUpdate,
         }).unwrap();
       } catch (error: any) {
-        toast({
-          title: 'Error',
-          description: 'Failed to update field order',
-          variant: 'destructive',
-        });
+      toast({
+        title: 'שגיאה',
+        description: 'נכשל בעדכון סדר השדות',
+        variant: 'destructive',
+      });
         return null;
       }
     }
@@ -188,13 +188,13 @@ export const useFormBuilder = () => {
       }
 
       toast({
-        title: 'Success',
-        description: 'Form saved successfully!',
+        title: 'הצלחה',
+        description: 'הטופס נשמר בהצלחה!',
       });
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to save form',
+        title: 'שגיאה',
+        description: error.message || 'נכשל בשמירת הטופס',
         variant: 'destructive',
       });
     } finally {

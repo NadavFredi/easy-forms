@@ -26,8 +26,8 @@ export const useSubmissions = () => {
   useEffect(() => {
     if (form && user && form.user_id !== user.id) {
       toast({
-        title: 'Access Denied',
-        description: 'You do not have permission to view these submissions',
+        title: 'גישה נדחתה',
+        description: 'אין לך הרשאה לצפות בהגשות האלה',
         variant: 'destructive',
       });
       navigate('/dashboard');
@@ -42,15 +42,15 @@ export const useSubmissions = () => {
     if (value === null || value === undefined) return '-';
     if (Array.isArray(value)) return value.join(', ');
     if (typeof value === 'object') return JSON.stringify(value);
-    if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+    if (typeof value === 'boolean') return value ? 'כן' : 'לא';
     return String(value);
   };
 
   const exportCSV = () => {
     if (submissions.length === 0) {
       toast({
-        title: 'No data',
-        description: 'No submissions to export',
+        title: 'אין נתונים',
+        description: 'אין הגשות לייצוא',
       });
       return;
     }
@@ -84,8 +84,8 @@ export const useSubmissions = () => {
     window.URL.revokeObjectURL(url);
 
     toast({
-      title: 'Success',
-      description: 'CSV exported successfully',
+      title: 'הצלחה',
+      description: 'CSV יוצא בהצלחה',
     });
   };
 
