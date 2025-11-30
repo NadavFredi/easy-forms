@@ -7,7 +7,30 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Save, Eye, Plus, Trash2, GripVertical, ArrowLeft } from 'lucide-react';
+import { 
+  Save, 
+  Eye, 
+  Plus, 
+  Trash2, 
+  GripVertical, 
+  ArrowLeft,
+  Type,
+  Mail,
+  Hash,
+  FileText,
+  List,
+  ListChecks,
+  CheckSquare,
+  CircleDot,
+  Upload,
+  Calendar,
+  Clock,
+  Link as LinkIcon,
+  Heading,
+  AlignLeft,
+  ExternalLink,
+  Minus
+} from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -65,8 +88,8 @@ function SortableField({ field, isSelected, onSelect, onDelete }: SortableFieldP
     <div
       ref={setNodeRef}
       style={style}
-      className={`border rounded-lg p-4 bg-background cursor-pointer transition-all ${
-        isSelected ? 'ring-2 ring-primary' : 'hover:border-primary/50'
+      className={`border rounded-lg p-4 bg-white cursor-pointer transition-all shadow-sm ${
+        isSelected ? 'ring-2 ring-primary border-primary' : 'border-gray-200 hover:border-primary/50 hover:shadow-md'
       }`}
       onClick={onSelect}
     >
@@ -190,8 +213,8 @@ const FormBuilder = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-muted-foreground">טוען...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-gray-500">טוען...</div>
       </div>
     );
   }
@@ -201,8 +224,8 @@ const FormBuilder = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+    <div className="min-h-screen bg-gray-50">
+      <nav className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -239,43 +262,43 @@ const FormBuilder = () => {
           {/* Left Sidebar - Field Types */}
           <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-semibold mb-4">הוסף שדה</h3>
-              <div className="grid grid-cols-2 gap-2">
+              <h3 className="text-lg font-semibold mb-4 text-gray-900">הוסף שדה</h3>
+              <div className="grid grid-cols-3 gap-3">
                 {[
-                  { type: 'text', label: 'טקסט' },
-                  { type: 'email', label: 'אימייל' },
-                  { type: 'number', label: 'מספר' },
-                  { type: 'textarea', label: 'אזור טקסט' },
-                  { type: 'select', label: 'בחירה' },
-                  { type: 'multiselect', label: 'בחירה מרובה' },
-                  { type: 'checkbox', label: 'תיבת סימון' },
-                  { type: 'radio', label: 'רדיו' },
-                  { type: 'file', label: 'קובץ' },
-                  { type: 'date', label: 'תאריך' },
-                  { type: 'time', label: 'שעה' },
-                  { type: 'url', label: 'קישור' },
-                  { type: 'header', label: 'כותרת' },
-                  { type: 'paragraph', label: 'פסקה' },
-                  { type: 'link', label: 'קישור חיצוני' },
-                  { type: 'separator', label: 'מפריד' },
-                ].map(({ type, label }) => (
+                  { type: 'text', label: 'טקסט', icon: Type },
+                  { type: 'email', label: 'אימייל', icon: Mail },
+                  { type: 'number', label: 'מספר', icon: Hash },
+                  { type: 'textarea', label: 'אזור טקסט', icon: FileText },
+                  { type: 'select', label: 'בחירה', icon: List },
+                  { type: 'multiselect', label: 'בחירה מרובה', icon: ListChecks },
+                  { type: 'checkbox', label: 'תיבת סימון', icon: CheckSquare },
+                  { type: 'radio', label: 'רדיו', icon: CircleDot },
+                  { type: 'file', label: 'קובץ', icon: Upload },
+                  { type: 'date', label: 'תאריך', icon: Calendar },
+                  { type: 'time', label: 'שעה', icon: Clock },
+                  { type: 'url', label: 'קישור', icon: LinkIcon },
+                  { type: 'header', label: 'כותרת', icon: Heading },
+                  { type: 'paragraph', label: 'פסקה', icon: AlignLeft },
+                  { type: 'link', label: 'קישור חיצוני', icon: ExternalLink },
+                  { type: 'separator', label: 'מפריד', icon: Minus },
+                ].map(({ type, label, icon: Icon }) => (
                   <Button
                     key={type}
                     variant="outline"
                     size="sm"
                     onClick={() => addField(type as FieldType)}
-                    className="justify-start"
+                    className="flex flex-col items-center justify-center h-20 p-2 hover:bg-gray-50 hover:border-primary/50 hover:shadow-sm transition-all duration-200"
                   >
-                    <Plus className="h-4 w-4 ml-2" />
-                    {label}
+                    <Icon className="h-5 w-5 mb-1 text-gray-700" />
+                    <span className="text-xs text-gray-600">{label}</span>
                   </Button>
                 ))}
               </div>
             </div>
 
             {/* Form Settings */}
-            <div className="space-y-4 border-t pt-4">
-              <h3 className="text-lg font-semibold">הגדרות טופס</h3>
+            <div className="space-y-4 border-t border-gray-200 pt-4">
+              <h3 className="text-lg font-semibold text-gray-900">הגדרות טופס</h3>
               <div className="space-y-2">
                 <Label>כתובת URL</Label>
                 <Input
@@ -308,12 +331,12 @@ const FormBuilder = () => {
 
           {/* Center - Form Preview */}
           <div className="lg:col-span-1">
-            <h3 className="text-lg font-semibold mb-4">תצוגה מקדימה</h3>
-            <div className="border rounded-lg p-6 bg-accent/30 min-h-[400px]">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">תצוגה מקדימה</h3>
+            <div className="border border-gray-200 rounded-lg p-6 bg-white min-h-[400px] shadow-md">
               {localFields.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
-                  <p className="mb-4">אין עדיין שדות</p>
-                  <p className="text-sm">הוסף שדות מהסרגל הצד</p>
+                <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
+                  <p className="mb-4 text-gray-600">אין עדיין שדות</p>
+                  <p className="text-sm text-gray-400">הוסף שדות מהסרגל הצד</p>
                 </div>
               ) : (
                 <DndContext
@@ -344,14 +367,14 @@ const FormBuilder = () => {
 
           {/* Right Sidebar - Field Editor */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">הגדרות שדה</h3>
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">הגדרות שדה</h3>
             {selectedField ? (
               <FieldEditor
                 field={selectedField}
                 onChange={(updates) => updateField(selectedField.id, updates)}
               />
             ) : (
-              <div className="border rounded-lg p-8 text-center text-muted-foreground">
+              <div className="border border-gray-200 rounded-lg p-8 text-center text-gray-500 bg-white shadow-sm">
                 <p>בחר שדה לעריכה</p>
               </div>
             )}

@@ -34,7 +34,7 @@ const FieldEditor = ({ field, onChange }: FieldEditorProps) => {
   };
 
   return (
-    <div className="space-y-4 p-4 border rounded-lg bg-background">
+    <div className="space-y-4 p-4 border border-gray-200 rounded-lg bg-white shadow-sm">
       <div className="space-y-2">
         <Label>סוג שדה</Label>
         <Select
