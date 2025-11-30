@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { ArrowLeft, FileText, Zap, Share2, BarChart3 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import Logo from "@/components/Logo";
 
 const Index = () => {
   const { user } = useAuth();
@@ -13,9 +14,7 @@ const Index = () => {
       <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="text-xl font-bold text-foreground hover:text-primary transition-colors">
-              Easy Forms - בונה טפסים
-            </Link>
+            <Logo />
             <div className="flex items-center gap-2">
               {user ? (
                 <Button asChild>

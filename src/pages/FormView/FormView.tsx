@@ -11,6 +11,7 @@ import { Loader2, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { FormField } from '@/lib/supabase';
+import Logo from '@/components/Logo';
 
 const FormView = () => {
   const {
@@ -339,8 +340,14 @@ const FormView = () => {
 
   if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-accent/20 p-6">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-background to-accent/20">
+        <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="container mx-auto px-6 py-4">
+            <Logo />
+          </div>
+        </nav>
+        <div className="flex-1 flex items-center justify-center p-6">
+          <Card className="w-full max-w-md">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <CheckCircle2 className="h-16 w-16 text-green-600 mb-4" />
             <h2 className="text-2xl font-bold mb-2">תודה רבה!</h2>
@@ -349,13 +356,20 @@ const FormView = () => {
             </p>
           </CardContent>
         </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-accent/20 py-12 px-6">
-      <div className="container mx-auto max-w-3xl">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background to-accent/20">
+      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-6 py-4">
+          <Logo />
+        </div>
+      </nav>
+      <div className="flex-1 py-12 px-6">
+        <div className="container mx-auto max-w-3xl">
         <Card>
           <CardHeader>
             <CardTitle className="text-3xl">{form.title}</CardTitle>
@@ -383,6 +397,7 @@ const FormView = () => {
             </form>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );

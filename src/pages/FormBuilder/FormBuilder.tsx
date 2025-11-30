@@ -49,6 +49,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import FieldEditor from '@/components/FormBuilder/FieldEditor';
 import FieldPreview from '@/components/FormBuilder/FieldPreview';
+import Logo from '@/components/Logo';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -229,6 +230,7 @@ const FormBuilder = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
+              <Logo showText={false} height={32} />
               <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
                 <ArrowLeft className="h-4 w-4 ml-2" />
                 חזור

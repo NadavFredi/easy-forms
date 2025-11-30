@@ -4,7 +4,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useDashboard } from './Dashboard.module';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, FileText, Eye, Settings, LogOut, Trash2 } from 'lucide-react';
+import { Plus, FileText, Eye, Settings, LogOut, Trash2, Home } from 'lucide-react';
+import Logo from '@/components/Logo';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -50,8 +51,12 @@ const Dashboard = () => {
       <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">Easy Forms - בונה טפסים</h1>
+            <Logo />
             <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" onClick={() => navigate('/')}>
+                <Home className="h-4 w-4 ml-2" />
+                חזרה לראשי
+              </Button>
               <span className="text-sm text-muted-foreground">{user.email}</span>
               <Button variant="ghost" size="sm" onClick={handleSignOut}>
                 <LogOut className="h-4 w-4 ml-2" />

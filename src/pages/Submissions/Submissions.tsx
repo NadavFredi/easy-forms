@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/table';
 import { ArrowLeft, Download, Settings } from 'lucide-react';
 import WebhookSettings from '@/components/WebhookSettings/WebhookSettings';
+import Logo from '@/components/Logo';
 
 const Submissions = () => {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ const Submissions = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
+              <Logo showText={false} height={32} />
               <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
                 <ArrowLeft className="h-4 w-4 ml-2" />
                 חזור
