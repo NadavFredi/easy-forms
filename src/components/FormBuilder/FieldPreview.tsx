@@ -78,7 +78,7 @@ const FieldPreview = ({ field }: FieldPreviewProps) => {
             {(field.options?.options || []).map((option: string, index: number) => (
               <div key={index} className="flex items-center space-x-2">
                 <Checkbox id={`${field.id}-${index}`} disabled />
-                <Label htmlFor={`${field.id}-${index}`} className="font-normal">
+                <Label htmlFor={`${field.id}-${index}`} className="font-normal break-words break-all">
                   {option}
                 </Label>
               </div>
@@ -90,7 +90,7 @@ const FieldPreview = ({ field }: FieldPreviewProps) => {
         return (
           <div className="flex items-center space-x-2">
             <Checkbox id={field.id} required={field.required} disabled />
-            <Label htmlFor={field.id} className="font-normal">
+            <Label htmlFor={field.id} className="font-normal break-words break-all">
               {field.label}
             </Label>
           </div>
@@ -102,7 +102,7 @@ const FieldPreview = ({ field }: FieldPreviewProps) => {
             {(field.options?.options || []).map((option: string, index: number) => (
               <div key={index} className="flex items-center space-x-2">
                 <RadioGroupItem value={option} id={`${field.id}-${index}`} />
-                <Label htmlFor={`${field.id}-${index}`} className="font-normal">
+                <Label htmlFor={`${field.id}-${index}`} className="font-normal break-words break-all">
                   {option}
                 </Label>
               </div>
@@ -148,12 +148,12 @@ const FieldPreview = ({ field }: FieldPreviewProps) => {
 
       case 'header':
         return (
-          <h2 className="text-2xl font-bold">{field.label}</h2>
+          <h2 className="text-2xl font-bold break-words break-all">{field.label}</h2>
         );
 
       case 'paragraph':
         return (
-          <p className="text-muted-foreground whitespace-pre-wrap">{field.label}</p>
+          <p className="text-muted-foreground whitespace-pre-wrap break-words break-all">{field.label}</p>
         );
 
       case 'link':
@@ -162,7 +162,7 @@ const FieldPreview = ({ field }: FieldPreviewProps) => {
             href={field.options?.url || '#'}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary hover:underline"
+            className="text-primary hover:underline break-words break-all"
           >
             {field.label}
           </a>
@@ -178,15 +178,15 @@ const FieldPreview = ({ field }: FieldPreviewProps) => {
 
   if (['header', 'paragraph', 'link', 'separator'].includes(field.type)) {
     return (
-      <div className={cn('py-2', widthClasses[field.width])}>
+      <div className={cn('py-2 w-full overflow-hidden', widthClasses[field.width])}>
         {renderField()}
       </div>
     );
   }
 
   return (
-    <div className={cn('space-y-2 py-2', widthClasses[field.width])}>
-      <Label>
+    <div className={cn('space-y-2 py-2 w-full', widthClasses[field.width])}>
+      <Label className="break-words break-all">
         {field.label}
         {field.required && <span className="text-destructive ml-1">*</span>}
       </Label>

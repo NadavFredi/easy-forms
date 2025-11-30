@@ -89,20 +89,20 @@ function SortableField({ field, isSelected, onSelect, onDelete }: SortableFieldP
     <div
       ref={setNodeRef}
       style={style}
-      className={`border rounded-lg p-4 bg-white cursor-pointer transition-all shadow-sm ${
+      className={`border rounded-lg p-4 bg-white cursor-pointer transition-all shadow-sm overflow-hidden ${
         isSelected ? 'ring-2 ring-primary border-primary' : 'border-gray-200 hover:border-primary/50 hover:shadow-md'
       }`}
       onClick={onSelect}
     >
-      <div className="flex items-start gap-2">
+      <div className="flex items-start gap-2 overflow-hidden">
         <div
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing p-1 hover:bg-accent rounded"
+          className="cursor-grab active:cursor-grabbing p-1 hover:bg-accent rounded flex-shrink-0"
         >
           <GripVertical className="h-5 w-5 text-muted-foreground" />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 min-w-0 overflow-hidden">
           <FieldPreview field={field} />
         </div>
         <AlertDialog>
