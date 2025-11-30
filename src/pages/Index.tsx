@@ -54,16 +54,18 @@ const Index = () => {
                   </Link>
                 </Button>
               ) : (
-                <Button size="lg" asChild className="group">
-                  <Link to="/signup">
-                    התחל בחינם
-                    <ArrowLeft className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform rotate-180" />
-                  </Link>
-                </Button>
+                <>
+                  <Button size="lg" asChild className="group">
+                    <Link to="/signup">
+                      התחל בחינם
+                      <ArrowLeft className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform rotate-180" />
+                    </Link>
+                  </Button>
+                  <Button size="lg" variant="outline" asChild>
+                    <Link to="/login">התחברות</Link>
+                  </Button>
+                </>
               )}
-              <Button size="lg" variant="outline" asChild>
-                <Link to="/login">התחברות</Link>
-              </Button>
             </div>
           </div>
         </div>
