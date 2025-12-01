@@ -14,6 +14,8 @@ import {
   Trash2, 
   GripVertical, 
   ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
   Type,
   Mail,
   Hash,
@@ -50,6 +52,10 @@ import { CSS } from '@dnd-kit/utilities';
 import FieldEditor from '@/components/FormBuilder/FieldEditor';
 import FieldPreview from '@/components/FormBuilder/FieldPreview';
 import Logo from '@/components/Logo';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -67,9 +73,10 @@ interface SortableFieldProps {
   isSelected: boolean;
   onSelect: () => void;
   onDelete: () => void;
+  onChange: (updates: Partial<FormField>) => void;
 }
 
-function SortableField({ field, isSelected, onSelect, onDelete }: SortableFieldProps) {
+function SortableField({ field, isSelected, onSelect, onDelete, onChange }: SortableFieldProps) {
   const {
     attributes,
     listeners,
@@ -85,25 +92,218 @@ function SortableField({ field, isSelected, onSelect, onDelete }: SortableFieldP
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const isContentField = ['header', 'paragraph', 'link', 'separator'].includes(field.type);
+  const hasPlaceholder = !isContentField && field.type !== 'checkbox';
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`border rounded-lg p-4 bg-white cursor-pointer transition-all shadow-sm overflow-hidden ${
-        isSelected ? 'ring-2 ring-primary border-primary' : 'border-gray-200 hover:border-primary/50 hover:shadow-md'
+      className={`border rounded-lg p-4 bg-white transition-all shadow-sm overflow-hidden ${
+        isSelected ? 'ring-2 ring-primary border-primary' : 'border-gray-200 hover:border-primary/50 hover:shadow-md cursor-pointer'
       }`}
-      onClick={onSelect}
+      onClick={!isSelected ? onSelect : undefined}
     >
       <div className="flex items-start gap-2 overflow-hidden">
         <div
           {...attributes}
           {...listeners}
           className="cursor-grab active:cursor-grabbing p-1 hover:bg-accent rounded flex-shrink-0"
+          onClick={(e) => e.stopPropagation()}
         >
           <GripVertical className="h-5 w-5 text-muted-foreground" />
         </div>
-        <div className="flex-1 min-w-0 overflow-hidden">
-          <FieldPreview field={field} />
+        <div className="flex-1 min-w-0 overflow-hidden space-y-2" onClick={(e) => e.stopPropagation()}>
+          {/* Editable Label */}
+          {!isContentField ? (
+            <div className="space-y-1">
+              {isSelected ? (
+                <Input
+                  value={field.label}
+                  onChange={(e) => onChange({ label: e.target.value })}
+                  placeholder="תווית שדה"
+                  className="text-sm font-medium h-8"
+                  onClick={(e) => e.stopPropagation()}
+                  onFocus={(e) => e.stopPropagation()}
+                />
+              ) : (
+                <Label className="text-sm font-medium break-words break-all block">
+                  {field.label}
+                  {field.required && <span className="text-destructive ml-1">*</span>}
+                </Label>
+              )}
+            </div>
+          ) : field.type === 'header' ? (
+            isSelected ? (
+              <Input
+                value={field.label}
+                onChange={(e) => onChange({ label: e.target.value })}
+                placeholder="כותרת"
+                className="text-2xl font-bold"
+                onClick={(e) => e.stopPropagation()}
+                onFocus={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <h2 className="text-2xl font-bold">{field.label}</h2>
+            )
+          ) : field.type === 'paragraph' ? (
+            isSelected ? (
+              <Textarea
+                value={field.label}
+                onChange={(e) => onChange({ label: e.target.value })}
+                placeholder="פסקה"
+                rows={3}
+                onClick={(e) => e.stopPropagation()}
+                onFocus={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <p className="text-muted-foreground whitespace-pre-wrap break-words break-all">{field.label}</p>
+            )
+          ) : null}
+
+          {/* Field Input */}
+          <div onClick={(e) => e.stopPropagation()}>
+            {field.type === 'text' || field.type === 'email' || field.type === 'url' || field.type === 'tel' || field.type === 'password' ? (
+              <Input
+                type={field.type}
+                value={isSelected && hasPlaceholder ? (field.placeholder || '') : ''}
+                placeholder={isSelected && hasPlaceholder ? 'טקסט מקום' : field.placeholder}
+                required={field.required}
+                disabled={!isSelected}
+                onChange={(e) => {
+                  if (isSelected && hasPlaceholder) {
+                    onChange({ placeholder: e.target.value });
+                  }
+                }}
+                onFocus={(e) => e.stopPropagation()}
+                className={isSelected ? 'bg-gray-50' : ''}
+              />
+            ) : field.type === 'number' ? (
+              <Input
+                type="text"
+                value={isSelected && hasPlaceholder ? (field.placeholder || '') : ''}
+                placeholder={isSelected && hasPlaceholder ? 'טקסט מקום' : field.placeholder}
+                required={field.required}
+                disabled={!isSelected}
+                onChange={(e) => {
+                  if (isSelected && hasPlaceholder) {
+                    onChange({ placeholder: e.target.value });
+                  }
+                }}
+                onFocus={(e) => e.stopPropagation()}
+                className={isSelected ? 'bg-gray-50' : ''}
+              />
+            ) : field.type === 'textarea' ? (
+              <Textarea
+                value={isSelected && hasPlaceholder ? (field.placeholder || '') : ''}
+                placeholder={isSelected && hasPlaceholder ? 'טקסט מקום' : field.placeholder}
+                required={field.required}
+                disabled={!isSelected}
+                rows={4}
+                onChange={(e) => {
+                  if (isSelected && hasPlaceholder) {
+                    onChange({ placeholder: e.target.value });
+                  }
+                }}
+                onFocus={(e) => e.stopPropagation()}
+                className={isSelected ? 'bg-gray-50' : ''}
+              />
+            ) : field.type === 'checkbox' ? (
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id={field.id}
+                  required={field.required}
+                  disabled
+                />
+                {isSelected ? (
+                  <Input
+                    value={field.label}
+                    onChange={(e) => onChange({ label: e.target.value })}
+                    placeholder="תווית"
+                    className="flex-1"
+                    onClick={(e) => e.stopPropagation()}
+                    onFocus={(e) => e.stopPropagation()}
+                  />
+                ) : (
+                  <Label htmlFor={field.id} className="font-normal break-words break-all">
+                    {field.label}
+                  </Label>
+                )}
+              </div>
+            ) : field.type === 'select' ? (
+              <Select disabled>
+                <SelectTrigger>
+                  <SelectValue placeholder={field.placeholder || 'בחר אפשרות'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {(field.options?.options || []).map((option: string, index: number) => (
+                    <SelectItem key={index} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : field.type === 'radio' ? (
+              <RadioGroup disabled>
+                {(field.options?.options || []).map((option: string, index: number) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <RadioGroupItem value={option} id={`${field.id}-${index}`} />
+                    <Label htmlFor={`${field.id}-${index}`} className="font-normal break-words break-all">
+                      {option}
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            ) : field.type === 'multiselect' ? (
+              <div className="space-y-2">
+                {(field.options?.options || []).map((option: string, index: number) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <Checkbox id={`${field.id}-${index}`} disabled />
+                    <Label htmlFor={`${field.id}-${index}`} className="font-normal break-words break-all">
+                      {option}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            ) : field.type === 'file' ? (
+              <Input type="file" required={field.required} disabled />
+            ) : field.type === 'date' ? (
+              <Input type="date" required={field.required} disabled />
+            ) : field.type === 'time' ? (
+              <Input type="time" required={field.required} disabled />
+            ) : field.type === 'link' ? (
+              isSelected ? (
+                <div className="space-y-2">
+                  <Input
+                    value={field.label}
+                    onChange={(e) => onChange({ label: e.target.value })}
+                    placeholder="טקסט קישור"
+                    onClick={(e) => e.stopPropagation()}
+                    onFocus={(e) => e.stopPropagation()}
+                  />
+                  <Input
+                    value={field.options?.url || ''}
+                    onChange={(e) => onChange({ options: { ...field.options, url: e.target.value } })}
+                    placeholder="https://example.com"
+                    onClick={(e) => e.stopPropagation()}
+                    onFocus={(e) => e.stopPropagation()}
+                  />
+                </div>
+              ) : (
+                <a
+                  href={field.options?.url || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline break-words break-all"
+                >
+                  {field.label}
+                </a>
+              )
+            ) : field.type === 'separator' ? (
+              <Separator />
+            ) : null}
+          </div>
+
         </div>
         <AlertDialog>
           <AlertDialogTrigger asChild>
@@ -152,6 +352,8 @@ const FormBuilder = () => {
   // Local state for editing
   const [localForm, setLocalForm] = useState(form);
   const [localFields, setLocalFields] = useState<FormField[]>(initialFields);
+  const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
+  const [rightSidebarOpen, setRightSidebarOpen] = useState(true);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -259,13 +461,18 @@ const FormBuilder = () => {
         </div>
       </nav>
 
-      <div className="container mx-auto px-6 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Left Sidebar - Field Types */}
-          <div className="space-y-4">
+      <div className="flex h-[calc(100vh-73px)] overflow-hidden">
+        {/* Left Sidebar - Field Types */}
+        <div
+          className={`relative transition-all duration-300 ease-in-out bg-white border-r border-gray-200 overflow-y-auto ${
+            leftSidebarOpen ? 'w-64' : 'w-0'
+          }`}
+        >
+          {leftSidebarOpen && (
+            <div className="space-y-4 p-4">
             <div>
-              <h3 className="text-lg font-semibold mb-4 text-gray-900">הוסף שדה</h3>
-              <div className="grid grid-cols-3 gap-3">
+              <h3 className="text-sm font-semibold mb-3 text-gray-900">הוסף שדה</h3>
+              <div className="grid grid-cols-2 gap-2">
                 {[
                   { type: 'text', label: 'טקסט', icon: Type },
                   { type: 'email', label: 'אימייל', icon: Mail },
@@ -289,33 +496,35 @@ const FormBuilder = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => addField(type as FieldType)}
-                    className="flex flex-col items-center justify-center h-20 p-2 hover:bg-gray-50 hover:border-primary/50 hover:shadow-sm transition-all duration-200"
+                    className="flex flex-col items-center justify-center h-16 p-2 hover:bg-gray-50 hover:border-primary/50 hover:shadow-sm transition-all duration-200"
                   >
-                    <Icon className="h-5 w-5 mb-1 text-gray-700" />
-                    <span className="text-xs text-gray-600">{label}</span>
+                    <Icon className="h-4 w-4 mb-1 text-gray-700" />
+                    <span className="text-xs text-gray-600 leading-tight">{label}</span>
                   </Button>
                 ))}
               </div>
             </div>
 
             {/* Form Settings */}
-            <div className="space-y-4 border-t border-gray-200 pt-4">
-              <h3 className="text-lg font-semibold text-gray-900">הגדרות טופס</h3>
-              <div className="space-y-2">
-                <Label>כתובת URL</Label>
+            <div className="space-y-3 border-t border-gray-200 pt-4 mt-4">
+              <h3 className="text-sm font-semibold text-gray-900">הגדרות טופס</h3>
+              <div className="space-y-1.5">
+                <Label className="text-xs">כתובת URL</Label>
                 <Input
                   value={localForm.slug}
                   onChange={(e) => setLocalForm({ ...localForm, slug: e.target.value })}
                   placeholder="כתובת-טופס"
+                  className="h-8 text-sm"
                 />
               </div>
-              <div className="space-y-2">
-                <Label>תיאור</Label>
+              <div className="space-y-1.5">
+                <Label className="text-xs">תיאור</Label>
                 <Textarea
                   value={localForm.description || ''}
                   onChange={(e) => setLocalForm({ ...localForm, description: e.target.value })}
                   placeholder="תיאור הטופס"
-                  rows={3}
+                  rows={2}
+                  className="text-sm"
                 />
               </div>
               <div className="flex items-center space-x-2">
@@ -329,12 +538,29 @@ const FormBuilder = () => {
                 <Label htmlFor="published">פורסם</Label>
               </div>
             </div>
-          </div>
+            </div>
+          )}
+          {/* Left Sidebar Toggle */}
+          <button
+            onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
+            className={`absolute right-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 bg-white border border-gray-200 rounded-full p-2 shadow-md hover:bg-gray-50 transition-all`}
+          >
+            {leftSidebarOpen ? (
+              <ChevronLeft className="h-4 w-4 text-gray-600" />
+            ) : (
+              <ChevronRight className="h-4 w-4 text-gray-600" />
+            )}
+          </button>
+        </div>
 
-          {/* Center - Form Preview */}
-          <div className="lg:col-span-1">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900">תצוגה מקדימה</h3>
-            <div className="border border-gray-200 rounded-lg p-6 bg-white min-h-[400px] shadow-md">
+        {/* Center - Form Preview (80% width) */}
+        <div className="flex-1 flex flex-col overflow-hidden bg-gray-50">
+          <div className="flex-shrink-0 px-6 py-4 border-b border-gray-200 bg-white">
+            <h3 className="text-lg font-semibold text-gray-900">תצוגה מקדימה</h3>
+          </div>
+          <div className="flex-1 overflow-y-auto p-8">
+            <div className="max-w-4xl mx-auto w-full">
+              <div className="border border-gray-200 rounded-lg p-8 bg-white shadow-sm min-h-full">
               {localFields.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
                   <p className="mb-4 text-gray-600">אין עדיין שדות</p>
@@ -383,6 +609,7 @@ const FormBuilder = () => {
                                     isSelected={selectedFieldId === field.id}
                                     onSelect={() => setSelectedFieldId(field.id)}
                                     onDelete={() => deleteField(field.id)}
+                                    onChange={(updates) => updateField(field.id, updates)}
                                   />
                                 </div>
                               ))}
@@ -393,23 +620,45 @@ const FormBuilder = () => {
                   </SortableContext>
                 </DndContext>
               )}
+              </div>
             </div>
           </div>
+        </div>
 
-          {/* Right Sidebar - Field Editor */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4 text-gray-900">הגדרות שדה</h3>
-            {selectedField ? (
-              <FieldEditor
-                field={selectedField}
-                onChange={(updates) => updateField(selectedField.id, updates)}
-              />
-            ) : (
-              <div className="border border-gray-200 rounded-lg p-8 text-center text-gray-500 bg-white shadow-sm">
-                <p>בחר שדה לעריכה</p>
+        {/* Right Sidebar - Field Editor */}
+        <div
+          className={`relative transition-all duration-300 ease-in-out bg-white border-l border-gray-200 overflow-y-auto ${
+            rightSidebarOpen ? 'w-80' : 'w-0'
+          }`}
+        >
+          {rightSidebarOpen && (
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">הגדרות שדה</h3>
               </div>
+              {selectedField ? (
+                <FieldEditor
+                  field={selectedField}
+                  onChange={(updates) => updateField(selectedField.id, updates)}
+                />
+              ) : (
+                <div className="border border-gray-200 rounded-lg p-8 text-center text-gray-500 bg-white shadow-sm">
+                  <p>בחר שדה לעריכה</p>
+                </div>
+              )}
+            </div>
+          )}
+          {/* Right Sidebar Toggle */}
+          <button
+            onClick={() => setRightSidebarOpen(!rightSidebarOpen)}
+            className={`absolute left-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 bg-white border border-gray-200 rounded-full p-2 shadow-md hover:bg-gray-50 transition-all`}
+          >
+            {rightSidebarOpen ? (
+              <ChevronRight className="h-4 w-4 text-gray-600" />
+            ) : (
+              <ChevronLeft className="h-4 w-4 text-gray-600" />
             )}
-          </div>
+          </button>
         </div>
       </div>
     </div>
