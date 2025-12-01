@@ -155,7 +155,7 @@ function SortableField({ field, isSelected, onSelect, onDelete, onChange, isOver
     <div
       ref={combinedRef}
       style={style}
-      className={`border rounded-lg p-4 bg-white transition-all shadow-sm overflow-hidden ${
+      className={`canvas-field-wrapper border rounded-lg p-4 bg-white transition-all shadow-sm overflow-hidden ${
         isSelected 
           ? 'border-[3px] border-primary ring-[4px] ring-primary/30 ring-offset-1 shadow-[0_0_0_3px_hsl(var(--primary)/0.15),0_4px_12px_rgba(0,0,0,0.15)] bg-primary/5' 
           : 'border-gray-200 hover:border-primary/50 hover:shadow-md cursor-pointer'
@@ -182,7 +182,7 @@ function SortableField({ field, isSelected, onSelect, onDelete, onChange, isOver
                   value={field.label}
                   onChange={(e) => onChange({ label: e.target.value })}
                   placeholder="תווית שדה"
-                  className="text-sm font-medium h-8"
+                  className="canvas-field-input text-sm font-medium h-8"
                   onClick={(e) => e.stopPropagation()}
                   onFocus={(e) => e.stopPropagation()}
                 />
@@ -199,7 +199,7 @@ function SortableField({ field, isSelected, onSelect, onDelete, onChange, isOver
                 value={field.label}
                 onChange={(e) => onChange({ label: e.target.value })}
                 placeholder="כותרת"
-                className="text-2xl font-bold"
+                className="canvas-field-input text-2xl font-bold"
                 onClick={(e) => e.stopPropagation()}
                 onFocus={(e) => e.stopPropagation()}
               />
@@ -213,6 +213,7 @@ function SortableField({ field, isSelected, onSelect, onDelete, onChange, isOver
                 onChange={(e) => onChange({ label: e.target.value })}
                 placeholder="פסקה"
                 rows={3}
+                className="canvas-field-input"
                 onClick={(e) => e.stopPropagation()}
                 onFocus={(e) => e.stopPropagation()}
               />
@@ -236,7 +237,7 @@ function SortableField({ field, isSelected, onSelect, onDelete, onChange, isOver
                   }
                 }}
                 onFocus={(e) => e.stopPropagation()}
-                className={isSelected ? 'bg-gray-50' : ''}
+                className={`canvas-field-input ${isSelected ? 'bg-gray-50' : ''}`}
               />
             ) : field.type === 'number' ? (
               <Input
@@ -251,7 +252,7 @@ function SortableField({ field, isSelected, onSelect, onDelete, onChange, isOver
                   }
                 }}
                 onFocus={(e) => e.stopPropagation()}
-                className={isSelected ? 'bg-gray-50' : ''}
+                className={`canvas-field-input ${isSelected ? 'bg-gray-50' : ''}`}
               />
             ) : field.type === 'textarea' ? (
               <Textarea
@@ -266,7 +267,7 @@ function SortableField({ field, isSelected, onSelect, onDelete, onChange, isOver
                   }
                 }}
                 onFocus={(e) => e.stopPropagation()}
-                className={isSelected ? 'bg-gray-50' : ''}
+                className={`canvas-field-input ${isSelected ? 'bg-gray-50' : ''}`}
               />
             ) : field.type === 'checkbox' ? (
               <div className="flex items-center space-x-2">
@@ -280,7 +281,7 @@ function SortableField({ field, isSelected, onSelect, onDelete, onChange, isOver
                     value={field.label}
                     onChange={(e) => onChange({ label: e.target.value })}
                     placeholder="תווית"
-                    className="flex-1"
+                    className="canvas-field-input flex-1"
                     onClick={(e) => e.stopPropagation()}
                     onFocus={(e) => e.stopPropagation()}
                   />
@@ -326,11 +327,11 @@ function SortableField({ field, isSelected, onSelect, onDelete, onChange, isOver
                 ))}
               </div>
             ) : field.type === 'file' ? (
-              <Input type="file" required={field.required} disabled />
+              <Input type="file" required={field.required} disabled className="canvas-field-input" />
             ) : field.type === 'date' ? (
-              <Input type="date" required={field.required} disabled />
+              <Input type="date" required={field.required} disabled className="canvas-field-input" />
             ) : field.type === 'time' ? (
-              <Input type="time" required={field.required} disabled />
+              <Input type="time" required={field.required} disabled className="canvas-field-input" />
             ) : field.type === 'link' ? (
               isSelected ? (
                 <div className="space-y-2">
@@ -338,6 +339,7 @@ function SortableField({ field, isSelected, onSelect, onDelete, onChange, isOver
                     value={field.label}
                     onChange={(e) => onChange({ label: e.target.value })}
                     placeholder="טקסט קישור"
+                    className="canvas-field-input"
                     onClick={(e) => e.stopPropagation()}
                     onFocus={(e) => e.stopPropagation()}
                   />
@@ -345,6 +347,7 @@ function SortableField({ field, isSelected, onSelect, onDelete, onChange, isOver
                     value={field.options?.url || ''}
                     onChange={(e) => onChange({ options: { ...field.options, url: e.target.value } })}
                     placeholder="https://example.com"
+                    className="canvas-field-input"
                     onClick={(e) => e.stopPropagation()}
                     onFocus={(e) => e.stopPropagation()}
                   />

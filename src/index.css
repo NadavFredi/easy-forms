@@ -79,20 +79,6 @@ body {
     @apply border-border;
   }
 
-  /* RTL Switch Support - Fix thumb position for RTL */
-  /* In RTL, when checked, thumb should be on the left (visual left) */
-  [dir="rtl"] button[data-state="checked"] .rtl-switch-thumb,
-  [dir="rtl"] [role="switch"][data-state="checked"] .rtl-switch-thumb,
-  [dir="rtl"] [data-state="checked"] .rtl-switch-thumb {
-    transform: translateX(-1.25rem) !important; /* -20px for checked state in RTL */
-  }
-  
-  [dir="rtl"] button[data-state="unchecked"] .rtl-switch-thumb,
-  [dir="rtl"] [role="switch"][data-state="unchecked"] .rtl-switch-thumb,
-  [dir="rtl"] [data-state="unchecked"] .rtl-switch-thumb {
-    transform: translateX(0) !important;
-  }
-
   html {
     scroll-behavior: smooth;
     direction: rtl;
@@ -123,6 +109,24 @@ body {
 
   .animate-fade-in {
     animation: fadeIn 0.8s ease-out;
+  }
+
+  /* Remove borders and outlines from inner inputs in canvas field wrappers */
+  /* This ensures only the outer wrapper shows the active state, preventing clipping */
+  .canvas-field-wrapper .canvas-field-input,
+  .canvas-field-wrapper .canvas-field-input:focus,
+  .canvas-field-wrapper .canvas-field-input:focus-visible,
+  .canvas-field-wrapper input.canvas-field-input,
+  .canvas-field-wrapper textarea.canvas-field-input,
+  .canvas-field-wrapper input.canvas-field-input:focus,
+  .canvas-field-wrapper input.canvas-field-input:focus-visible,
+  .canvas-field-wrapper textarea.canvas-field-input:focus,
+  .canvas-field-wrapper textarea.canvas-field-input:focus-visible {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    --tw-ring-width: 0 !important;
+    --tw-ring-offset-width: 0 !important;
   }
 }
 
