@@ -156,7 +156,9 @@ function SortableField({ field, isSelected, onSelect, onDelete, onChange, isOver
       ref={combinedRef}
       style={style}
       className={`border rounded-lg p-4 bg-white transition-all shadow-sm overflow-hidden ${
-        isSelected ? 'ring-2 ring-primary border-primary' : 'border-gray-200 hover:border-primary/50 hover:shadow-md cursor-pointer'
+        isSelected 
+          ? 'border-[3px] border-primary ring-[4px] ring-primary/30 ring-offset-1 shadow-[0_0_0_3px_hsl(var(--primary)/0.15),0_4px_12px_rgba(0,0,0,0.15)] bg-primary/5' 
+          : 'border-gray-200 hover:border-primary/50 hover:shadow-md cursor-pointer'
       } ${
         isDropTarget && field.width === 'full' ? 'ring-2 ring-blue-500 border-blue-500 bg-blue-50/50' : ''
       }`}
@@ -460,7 +462,7 @@ const FormBuilder = () => {
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
-    const reorderedFields = await handleDragEndHook(event, localFields, createNewField);
+    const reorderedFields = await handleDragEndHook(event, localFields);
     if (reorderedFields) {
       setLocalFields(reorderedFields);
       // If a new field was created, select it
@@ -501,7 +503,7 @@ const FormBuilder = () => {
                 <ArrowLeft className="h-4 w-4 ml-2" />
                 חזור
               </Button>
-              <div className="relative transition-all duration-200 rounded-lg border-2 border-transparent px-3 py-1.5 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-0 focus-within:border-primary focus-within:shadow-md focus-within:bg-white/80">
+              <div className="relative transition-all duration-200 rounded-lg border-2 border-transparent px-3 py-2 focus-within:border-[3px] focus-within:border-primary focus-within:ring-[4px] focus-within:ring-primary/30 focus-within:ring-offset-1 focus-within:shadow-[0_0_0_3px_hsl(var(--primary)/0.15),0_4px_12px_rgba(0,0,0,0.15)] focus-within:bg-primary/5">
                 <Input
                   value={localForm.title}
                   onChange={(e) => setLocalForm({ ...localForm, title: e.target.value })}
