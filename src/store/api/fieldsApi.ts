@@ -13,6 +13,7 @@ export const fieldsApi = createApi({
           .from('form_fields')
           .select('*')
           .eq('form_id', formId)
+          .order('row', { ascending: true })
           .order('order_index', { ascending: true });
         if (error) return { error };
         return { data: data || [] };

@@ -351,15 +351,44 @@ const FormBuilder = () => {
                     strategy={verticalListSortingStrategy}
                   >
                     <div className="space-y-4">
-                      {localFields.map((field) => (
-                        <SortableField
-                          key={field.id}
-                          field={field}
-                          isSelected={selectedFieldId === field.id}
-                          onSelect={() => setSelectedFieldId(field.id)}
-                          onDelete={() => deleteField(field.id)}
-                        />
-                      ))}
+                      {(() => {
+                        // Group fields by row
+                        const fieldsByRow = localFields.reduce((acc, field) => {
+                          const row = field.row || 1;
+                          if (!acc[row]) acc[row] = [];
+                          acc[row].push(field);
+                          return acc;
+                        }, {} as Record<number, FormField[]>);
+
+                        // Get sorted row numbers
+                        const rowNumbers = Object.keys(fieldsByRow)
+                          .map(Number)
+                          .sort((a, b) => a - b);
+
+                        // Render each row
+                        const widthClasses = {
+                          full: 'w-full',
+                          half: 'w-full md:w-[calc(50%-0.5rem)]',
+                          third: 'w-full md:w-[calc(33.333%-0.67rem)]',
+                          quarter: 'w-full md:w-[calc(25%-0.75rem)]',
+                        };
+                        return rowNumbers.map((rowNum) => (
+                          <div key={rowNum} className="flex flex-wrap gap-4">
+                            {fieldsByRow[rowNum]
+                              .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+                              .map((field) => (
+                                <div key={field.id} className={widthClasses[field.width] || 'w-full'}>
+                                  <SortableField
+                                    field={field}
+                                    isSelected={selectedFieldId === field.id}
+                                    onSelect={() => setSelectedFieldId(field.id)}
+                                    onDelete={() => deleteField(field.id)}
+                                  />
+                                </div>
+                              ))}
+                          </div>
+                        ));
+                      })()}
                     </div>
                   </SortableContext>
                 </DndContext>

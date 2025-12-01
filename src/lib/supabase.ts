@@ -27,6 +27,7 @@ export interface FormField {
   options?: any;
   validation?: any;
   order_index: number;
+  row: number;
   width: 'full' | 'half' | 'third' | 'quarter';
   created_at: string;
 }

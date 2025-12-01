@@ -379,9 +379,27 @@ const FormView = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {fields.map((field) => renderField(field))}
-              </div>
+              {(() => {
+                // Group fields by row
+                const fieldsByRow = fields.reduce((acc, field) => {
+                  const row = field.row || 1;
+                  if (!acc[row]) acc[row] = [];
+                  acc[row].push(field);
+                  return acc;
+                }, {} as Record<number, FormField[]>);
+
+                // Get sorted row numbers
+                const rowNumbers = Object.keys(fieldsByRow)
+                  .map(Number)
+                  .sort((a, b) => a - b);
+
+                // Render each row
+                return rowNumbers.map((rowNum) => (
+                  <div key={rowNum} className="flex flex-wrap gap-4">
+                    {fieldsByRow[rowNum].map((field) => renderField(field))}
+                  </div>
+                ));
+              })()}
               <div className="flex justify-start pt-4">
                 <Button type="submit" size="lg" disabled={submitting}>
                   {submitting ? (

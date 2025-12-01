@@ -51,13 +51,20 @@ export const useFormBuilder = () => {
   const createNewField = (type: FieldType = 'text'): FormField => {
     if (!id) throw new Error('Form ID is required');
 
+    // Default to row 1 for new fields (one field per row)
+    // The user can change this later with drag and drop
+    const newRow = 1;
+    const fieldsInRow = fields.filter(f => (f.row || 1) === newRow);
+    const orderInRow = fieldsInRow.length;
+
     const newField: Partial<FormField> = {
       form_id: id,
       type,
       label: type === 'header' ? 'כותרת' : type === 'paragraph' ? 'פסקה' : 'שדה חדש',
       placeholder: '',
       required: false,
-      order_index: fields.length,
+      order_index: orderInRow,
+      row: newRow,
       width: 'full',
       options:
         type === 'select' || type === 'multiselect' || type === 'radio'
