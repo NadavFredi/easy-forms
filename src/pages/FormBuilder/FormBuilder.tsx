@@ -41,6 +41,9 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  useDroppable,
+  DragOverEvent,
+  useDraggable,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -74,9 +77,50 @@ interface SortableFieldProps {
   onSelect: () => void;
   onDelete: () => void;
   onChange: (updates: Partial<FormField>) => void;
+  isOver?: boolean;
 }
 
-function SortableField({ field, isSelected, onSelect, onDelete, onChange }: SortableFieldProps) {
+// Draggable Field Type Button Component
+function DraggableFieldTypeButton({ 
+  type, 
+  label, 
+  icon: Icon, 
+  onClick 
+}: { 
+  type: FieldType; 
+  label: string; 
+  icon: any;
+  onClick?: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: type,
+    data: { type: 'field-type', fieldType: type },
+  });
+
+  const style = transform ? {
+    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+  } : undefined;
+
+  return (
+    <Button
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      onClick={onClick}
+      variant="outline"
+      size="sm"
+      className={`flex flex-col items-center justify-center h-16 p-2 hover:bg-gray-50 hover:border-primary/50 hover:shadow-sm transition-all duration-200 ${
+        isDragging ? 'opacity-50' : ''
+      }`}
+    >
+      <Icon className="h-4 w-4 mb-1 text-gray-700" />
+      <span className="text-xs text-gray-600 leading-tight">{label}</span>
+    </Button>
+  );
+}
+
+function SortableField({ field, isSelected, onSelect, onDelete, onChange, isOver }: SortableFieldProps) {
   const {
     attributes,
     listeners,
@@ -85,6 +129,10 @@ function SortableField({ field, isSelected, onSelect, onDelete, onChange }: Sort
     transition,
     isDragging,
   } = useSortable({ id: field.id });
+
+  const { setNodeRef: setDroppableRef, isOver: isDroppableOver } = useDroppable({
+    id: `drop-${field.id}`,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -95,12 +143,22 @@ function SortableField({ field, isSelected, onSelect, onDelete, onChange }: Sort
   const isContentField = ['header', 'paragraph', 'link', 'separator'].includes(field.type);
   const hasPlaceholder = !isContentField && field.type !== 'checkbox';
 
+  // Combine refs for both sortable and droppable
+  const combinedRef = (node: HTMLElement | null) => {
+    setNodeRef(node);
+    setDroppableRef(node);
+  };
+
+  const isDropTarget = isOver || isDroppableOver;
+
   return (
     <div
-      ref={setNodeRef}
+      ref={combinedRef}
       style={style}
       className={`border rounded-lg p-4 bg-white transition-all shadow-sm overflow-hidden ${
         isSelected ? 'ring-2 ring-primary border-primary' : 'border-gray-200 hover:border-primary/50 hover:shadow-md cursor-pointer'
+      } ${
+        isDropTarget && field.width === 'full' ? 'ring-2 ring-blue-500 border-blue-500 bg-blue-50/50' : ''
       }`}
       onClick={!isSelected ? onSelect : undefined}
     >
@@ -354,6 +412,7 @@ const FormBuilder = () => {
   const [localFields, setLocalFields] = useState<FormField[]>(initialFields);
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true);
+  const [activeDragOver, setActiveDragOver] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -401,9 +460,14 @@ const FormBuilder = () => {
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
-    const reorderedFields = await handleDragEndHook(event, localFields);
+    const reorderedFields = await handleDragEndHook(event, localFields, createNewField);
     if (reorderedFields) {
       setLocalFields(reorderedFields);
+      // If a new field was created, select it
+      const newField = reorderedFields.find((f) => f.id.startsWith('temp-') && !localFields.find((lf) => lf.id === f.id));
+      if (newField) {
+        setSelectedFieldId(newField.id);
+      }
     }
   };
 
@@ -437,28 +501,16 @@ const FormBuilder = () => {
                 <ArrowLeft className="h-4 w-4 ml-2" />
                 חזור
               </Button>
-              <Input
-                value={localForm.title}
-                onChange={(e) => setLocalForm({ ...localForm, title: e.target.value })}
-                className="text-xl font-bold border-0 focus-visible:ring-0 p-0 h-auto"
-                placeholder="כותרת הטופס"
-              />
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2.5 px-3 py-1.5 border border-gray-200 rounded-md bg-white shadow-sm">
-                <Label htmlFor="published" className="text-sm font-medium cursor-pointer mb-0 leading-none whitespace-nowrap select-none">
-                  פורסם
-                </Label>
-                <div className="flex items-center justify-center h-6 w-11 flex-shrink-0">
-                  <Switch
-                    id="published"
-                    checked={localForm.is_published}
-                    onCheckedChange={(checked) =>
-                      setLocalForm({ ...localForm, is_published: checked })
-                    }
-                  />
-                </div>
+              <div className="relative transition-all duration-200 rounded-lg border-2 border-transparent px-3 py-1.5 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-0 focus-within:border-primary focus-within:shadow-md focus-within:bg-white/80">
+                <Input
+                  value={localForm.title}
+                  onChange={(e) => setLocalForm({ ...localForm, title: e.target.value })}
+                  className="text-xl font-bold border-0 focus-visible:ring-0 focus-visible:outline-none focus:ring-0 focus:outline-none p-0 h-auto bg-transparent"
+                  placeholder="כותרת הטופס"
+                />
               </div>
+            </div>
+            <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 onClick={() => window.open(`/f/${localForm.slug}`, '_blank')}
@@ -505,16 +557,13 @@ const FormBuilder = () => {
                   { type: 'link', label: 'קישור חיצוני', icon: ExternalLink },
                   { type: 'separator', label: 'מפריד', icon: Minus },
                 ].map(({ type, label, icon: Icon }) => (
-                  <Button
+                  <DraggableFieldTypeButton
                     key={type}
-                    variant="outline"
-                    size="sm"
+                    type={type as FieldType}
+                    label={label}
+                    icon={Icon}
                     onClick={() => addField(type as FieldType)}
-                    className="flex flex-col items-center justify-center h-16 p-2 hover:bg-gray-50 hover:border-primary/50 hover:shadow-sm transition-all duration-200"
-                  >
-                    <Icon className="h-4 w-4 mb-1 text-gray-700" />
-                    <span className="text-xs text-gray-600 leading-tight">{label}</span>
-                  </Button>
+                  />
                 ))}
               </div>
             </div>
@@ -540,6 +589,16 @@ const FormBuilder = () => {
                   rows={2}
                   className="text-sm"
                 />
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="published"
+                  checked={localForm.is_published}
+                  onCheckedChange={(checked) =>
+                    setLocalForm({ ...localForm, is_published: checked })
+                  }
+                />
+                <Label htmlFor="published">פורסם</Label>
               </div>
             </div>
             </div>
@@ -575,6 +634,15 @@ const FormBuilder = () => {
                   sensors={sensors}
                   collisionDetection={closestCenter}
                   onDragEnd={handleDragEnd}
+                  onDragOver={(event) => {
+                    const { over } = event;
+                    if (over && typeof over.id === 'string' && over.id.startsWith('drop-')) {
+                      setActiveDragOver(over.id.replace('drop-', ''));
+                    } else {
+                      setActiveDragOver(null);
+                    }
+                  }}
+                  onDragCancel={() => setActiveDragOver(null)}
                 >
                   <SortableContext
                     items={localFields.map((f) => f.id)}
@@ -603,7 +671,7 @@ const FormBuilder = () => {
                           quarter: 'w-full md:w-[calc(25%-0.75rem)]',
                         };
                         return rowNumbers.map((rowNum) => (
-                          <div key={rowNum} className="flex flex-wrap gap-4">
+                          <div key={rowNum} className="flex flex-wrap gap-4 w-full">
                             {fieldsByRow[rowNum]
                               .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
                               .map((field) => (
@@ -614,6 +682,7 @@ const FormBuilder = () => {
                                     onSelect={() => setSelectedFieldId(field.id)}
                                     onDelete={() => deleteField(field.id)}
                                     onChange={(updates) => updateField(field.id, updates)}
+                                    isOver={activeDragOver === field.id && field.width === 'full'}
                                   />
                                 </div>
                               ))}
