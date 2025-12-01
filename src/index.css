@@ -128,6 +128,17 @@ body {
     --tw-ring-width: 0 !important;
     --tw-ring-offset-width: 0 !important;
   }
+
+  /* RTL Switch Support - Reverse the thumb animation for RTL layout */
+  html[dir="rtl"] [role="switch"][data-state="checked"] > span,
+  [dir="rtl"] [role="switch"][data-state="checked"] > span {
+    transform: translateX(-1.25rem) !important;
+  }
+  
+  html[dir="rtl"] [role="switch"][data-state="unchecked"] > span,
+  [dir="rtl"] [role="switch"][data-state="unchecked"] > span {
+    transform: translateX(0) !important;
+  }
 }
 
 @keyframes fadeUp {

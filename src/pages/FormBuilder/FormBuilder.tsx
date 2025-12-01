@@ -515,7 +515,19 @@ const FormBuilder = () => {
                 />
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm hover:border-primary/30 hover:shadow-md transition-all">
+                <Label htmlFor="published" className="text-sm font-semibold cursor-pointer text-gray-700 select-none">
+                  פורסם
+                </Label>
+                <Switch
+                  id="published"
+                  checked={localForm.is_published}
+                  onCheckedChange={(checked) =>
+                    setLocalForm({ ...localForm, is_published: checked })
+                  }
+                />
+              </div>
               <Button
                 variant="outline"
                 onClick={() => window.open(`/f/${localForm.slug}`, '_blank')}
@@ -594,16 +606,6 @@ const FormBuilder = () => {
                   rows={2}
                   className="text-sm"
                 />
-              </div>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="published"
-                  checked={localForm.is_published}
-                  onCheckedChange={(checked) =>
-                    setLocalForm({ ...localForm, is_published: checked })
-                  }
-                />
-                <Label htmlFor="published">פורסם</Label>
               </div>
             </div>
             </div>
