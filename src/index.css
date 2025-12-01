@@ -79,6 +79,20 @@ body {
     @apply border-border;
   }
 
+  /* RTL Switch Support - Fix thumb position for RTL */
+  /* In RTL, when checked, thumb should be on the left (visual left) */
+  [dir="rtl"] button[data-state="checked"] .rtl-switch-thumb,
+  [dir="rtl"] [role="switch"][data-state="checked"] .rtl-switch-thumb,
+  [dir="rtl"] [data-state="checked"] .rtl-switch-thumb {
+    transform: translateX(-1.25rem) !important; /* -20px for checked state in RTL */
+  }
+  
+  [dir="rtl"] button[data-state="unchecked"] .rtl-switch-thumb,
+  [dir="rtl"] [role="switch"][data-state="unchecked"] .rtl-switch-thumb,
+  [dir="rtl"] [data-state="unchecked"] .rtl-switch-thumb {
+    transform: translateX(0) !important;
+  }
+
   html {
     scroll-behavior: smooth;
     direction: rtl;

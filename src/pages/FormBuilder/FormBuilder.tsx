@@ -444,7 +444,21 @@ const FormBuilder = () => {
                 placeholder="כותרת הטופס"
               />
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5 px-3 py-1.5 border border-gray-200 rounded-md bg-white shadow-sm">
+                <Label htmlFor="published" className="text-sm font-medium cursor-pointer mb-0 leading-none whitespace-nowrap select-none">
+                  פורסם
+                </Label>
+                <div className="flex items-center justify-center h-6 w-11 flex-shrink-0">
+                  <Switch
+                    id="published"
+                    checked={localForm.is_published}
+                    onCheckedChange={(checked) =>
+                      setLocalForm({ ...localForm, is_published: checked })
+                    }
+                  />
+                </div>
+              </div>
               <Button
                 variant="outline"
                 onClick={() => window.open(`/f/${localForm.slug}`, '_blank')}
@@ -526,16 +540,6 @@ const FormBuilder = () => {
                   rows={2}
                   className="text-sm"
                 />
-              </div>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="published"
-                  checked={localForm.is_published}
-                  onCheckedChange={(checked) =>
-                    setLocalForm({ ...localForm, is_published: checked })
-                  }
-                />
-                <Label htmlFor="published">פורסם</Label>
               </div>
             </div>
             </div>
